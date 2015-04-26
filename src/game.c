@@ -3,12 +3,13 @@
  * ========================================
  * [] File Name : game.c
  *
- * [] Creation Date : 16-04-2015
- *
- * [] Last Modified : Thu 16 Apr 2015 04:34:58 PM IRDT
+ * [] Creation Date : 26-04-2015
  *
  * [] Created By : Parham Alvani (parham.alvani@gmail.com)
  * =======================================
+*/
+/*
+ * Copyright (c) 2015 Parham Alvani.
 */
 void play(int player_no)
 {

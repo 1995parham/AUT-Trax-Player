@@ -3,12 +3,13 @@
  * ========================================
  * [] File Name : string.h
  *
- * [] Creation Date : 06-01-2015
- *
- * [] Last Modified : Sat 31 Jan 2015 01:14:47 PM IRST
+ * [] Creation Date : 26-04-2015
  *
  * [] Created By : Parham Alvani (parham.alvani@gmail.com)
  * =======================================
+*/
+/*
+ * Copyright (c) 2015 Parham Alvani.
 */
 #ifndef STRING_H
 #define STRING_H

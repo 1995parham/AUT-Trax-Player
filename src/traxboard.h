@@ -1,13 +1,38 @@
 /*
  * In The Name Of God
  * ========================================
- * [] File Name : traxbord.h
+ * [] File Name : traxboard.h
  *
- * [] Creation Date : 16-04-2015
- *
- * [] Last Modified : Thu 16 Apr 2015 04:57:21 PM IRDT
+ * [] Creation Date : 26-04-2015
  *
  * [] Created By : Parham Alvani (parham.alvani@gmail.com)
  * =======================================
 */
+/*
+ * Copyright (c) 2015 Parham Alvani.
+*/
+#ifndef TRAXBOARD_H
+#define TRAXBOARD_H
 
+#define EMPTY 0
+#define INVALID 7
+#define NS 1
+#define SN 1
+#define WE 2
+#define EW 2
+#define NW 3
+#define WN 3
+#define NE 4
+#define EN 4
+#define WS 5
+#define SW 5
+#define SE 6
+#define ES 6
+
+#define WHITE 0
+#define BLACK 1
+#define DRAW 2
+#define NOPLAYER 3
+#define NORESULT 3
+
+#endif
