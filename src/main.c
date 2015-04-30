@@ -11,6 +11,7 @@
 /*
  * Copyright (c) 2015 Parham Alvani.
 */
+#include <stdio.h>
 #include "string.h"
 #include "game.h"
 
@@ -19,7 +20,7 @@ int main(int argc, char *argv[])
 	char input[4];
 	int player_no;
 
-	/* input = serial input */
+	scanf("%s", input);
 
 	if (!strcmp(input, "-W"))
 		player_no = 1;

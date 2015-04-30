@@ -13,161 +13,57 @@
 */
 #include "string.h"
 #include "traxboard.h"
+#include "traxmove.h"
 
 #define false 0
 #define true 1
 
 static int boardEmpty;
 static int wtm;
-static int **board;
-static int gameover;
-static int num_of_tiles;
-static int firstrow, lastrow, firstcol, lastcol;
+static int board[8][8];
+static int gameOver;
+static int numOfTiles;
+static int firstRow, lastRow, firstCol, lastCol;
+
 static int whiteCorners, blackCorners;
 static int whiteThreats, blackThreats;
 static int whiteThreats_save, blackThreats_save;
 static int whiteCorners_save, blackCorners_save;
 
 static char *border;
+
 static char *border_save;
 
 static int boardEmpty_save;
 static int wtm_save;
-static int **board_save;
-static int gameover_save;
+static int board_save[8][8];
+static int gameOver_save;
 static int num_of_tiles_save;
-static int firstrow_save, lastrow_save, firstcol_save, lastcol_save;
+static int firstRow_save, lastRow_save, firstCol_save, lastCol_save;
 
 
-/*
-static String[][] col_row_array;
-*/
-/*
-    static
-    {
-        StringBuffer str;
-        col_row_array = new String[9][9];
-        for (char i = '@'; i <= 'H'; i++) {
-            for (char j = '0'; j <= '8'; j++) {
-                str = new StringBuffer();
-                str.append(i);
-                str.append(j);
-                col_row_array[i - '@'][j - '0'] = new String(str);
-            }
-        }
-    }
-*/
-
-int blank(int piece)
+static int blank(int piece)
 {
 	return (piece == EMPTY);
 }
 
-int getNumOfTiles(void)
+static int getNumOfTiles(void)
 {
-	return num_of_tiles;
+	return numOfTiles;
 }
 
-
-/*
-static rotate( tb)
-{
-        Traxboard result=new Traxboard(tb);
-        for (int i=0; i<17; i++) {
-            for (int j=0; j<17; j++) {
-                switch (tb.board[16-j][i]) {
-                    case NS:
-                        result.board[i][j]=WE;
-                        break;
-                    case WE:
-                        result.board[i][j]=NS;
-                        break;
-                    case EMPTY:
-                        result.board[i][j]=EMPTY;
-                        break;
-                    case NW:
-                        result.board[i][j]=NE;
-                        break;
-                    case NE:
-                        result.board[i][j]=SE;
-                        break;
-                    case SE:
-                        result.board[i][j]=SW;
-                        break;
-                    case SW:
-                        result.board[i][j]=NW;
-                        break;
-                    default:
-                        // This should never happen
-                        throw new RuntimeException("This should never happen.");
-                }
-            }
-        }
-        result.setCorners();
-        result.border=null;
-        return result;
-    }
-
-    public int getNumberOfWhiteThreats() {
-        if (whiteThreats==-1) count2times();
-        return whiteThreats;
-    }
-
-    public int getNumberOfBlackThreats() {
-        if (blackThreats==-1) count2times();
-        return blackThreats;
-    }
-
-    public int getNumberOfWhiteCorners() {
-        if (whiteCorners==-1) count2times();
-        return whiteCorners;
-    }
-
-    public int getNumberOfBlackCorners() {
-        if (blackCorners==-1) count2times();
-        return blackCorners;
-    }
-
-    private void count2times() {
-        Traxboard t_copy=new Traxboard(rotate(this));
-
-        this.count();
-        t_copy.count();
-
-        this.whiteCorners=Math.max(this.whiteCorners,t_copy.whiteCorners);
-        this.whiteThreats=Math.max(this.whiteThreats,t_copy.whiteThreats);
-        this.blackCorners=Math.max(this.blackCorners,t_copy.blackCorners);
-        this.blackThreats=Math.max(this.blackThreats,t_copy.blackThreats);
-    }
-
-    private void setCorners()
-    {
-        firstrow=-1;
-        firstcol=-1;
-        lastcol=-1;
-        lastrow=-1;
-        for (int i=0; i<17; i++) {
-            for (int j=0; j<17; j++) {
-                if ((firstrow<0) && (board[i][j]!=EMPTY)) firstrow=i;
-                if ((lastrow<0) && (board[16-i][j]!=EMPTY)) lastrow=16-i;
-                if ((firstcol<0) && (board[j][i]!=EMPTY)) firstcol=i;
-                if ((lastcol<0) && (board[j][16-i]!=EMPTY)) lastcol=16-i;
-            }
-        }
-    }
-*/
 static void saveState(void)
 {
 	int i, j;
 
 	wtm_save = wtm;
 	boardEmpty_save = boardEmpty;
-	gameover_save = gameover;
-	num_of_tiles_save = num_of_tiles;
-	firstrow_save = firstrow;
-	firstcol_save = firstcol;
-	lastrow_save = lastrow;
-	lastcol_save = lastcol;
+	gameOver_save = gameOver;
+	num_of_tiles_save = numOfTiles;
+	firstRow_save = firstRow;
+	firstCol_save = firstCol;
+	lastRow_save = lastRow;
+	lastCol_save = lastCol;
 	whiteThreats_save = whiteThreats;
 	blackThreats_save = blackThreats;
 	whiteCorners_save = whiteCorners;
@@ -185,12 +81,12 @@ static void restoreState(void)
 
 	wtm = wtm_save;
 	boardEmpty = boardEmpty_save;
-	gameover = gameover_save;
-	num_of_tiles = num_of_tiles_save;
-	firstrow = firstrow_save;
-	firstcol = firstcol_save;
-	lastrow = lastrow_save;
-	lastcol = lastcol_save;
+	gameOver = gameOver_save;
+	numOfTiles = num_of_tiles_save;
+	firstRow = firstRow_save;
+	firstCol = firstCol_save;
+	lastRow = lastRow_save;
+	lastCol = lastCol_save;
 	whiteThreats = whiteThreats_save;
 	blackThreats = blackThreats_save;
 	whiteCorners = whiteCorners_save;
@@ -203,135 +99,230 @@ static void restoreState(void)
 
 }
 
-/*
-Traxboard()
-    {
-        int i, j;
-
-        wtm = WHITE;
-        gameover = NOPLAYER;
-        num_of_tiles = 0;
-        whiteCorners=0;
-        blackCorners=0;
-        whiteThreats=0;
-        blackThreats=0;
-        border="";
-
-        board = new int[17][17];
-        board_save = new int[17][17];
-        for (i = 0; i < 17; i++)
-            for (j = 0; j < 17; j++)
-                board[i][j] = EMPTY;
-        boardEmpty = true;
-
-}
-
-    public Traxboard(Traxboard org)
-    {
-        int i, j;
-
-        wtm = org.wtm;
-        gameover = org.gameover;
-        num_of_tiles = org.num_of_tiles;
-        board = new int[17][17];
-        board_save = new int[17][17];
-        for (i = 0; i < 17; i++) {
-            for (j = 0; j < 17; j++) {
-                this.board[i][j] = org.board[i][j];
-                this.board_save[i][j] = org.board_save[i][j];
-            }
-        }
-        firstrow = org.firstrow;
-        firstcol = org.firstcol;
-        lastrow = org.lastrow;
-        lastcol = org.lastcol;
-        firstrow_save = org.firstrow_save;
-        firstcol_save = org.firstcol_save;
-        lastrow_save = org.lastrow_save;
-        lastcol_save = org.lastcol_save;
-        boardEmpty = org.boardEmpty;
-        whiteThreats_save = org.whiteThreats_save;
-        blackThreats_save = org.blackThreats_save;
-        whiteThreats = org.whiteThreats;
-        blackThreats = org.blackThreats;
-        whiteCorners_save = org.whiteCorners;
-        blackCorners_save = org.blackCorners;
-        whiteCorners = org.whiteCorners;
-        blackCorners = org.blackCorners;
-        border = org.border;
-    }
-*/
-
 int getRowSize(void)
 {
-	return ((getNumOfTiles() == 0) ? 0 : 1 + (lastrow - firstrow));
+	return ((getNumOfTiles() == 0) ? 0 : 1 + (lastRow - firstRow));
 }
 
 int getColSize(void)
 {
-	return ((getNumOfTiles() == 0) ? 0 : 1 + (lastcol - firstcol));
+	return ((getNumOfTiles() == 0) ? 0 : 1 + (lastCol - firstCol));
 }
 
-int getAt(int row, int col)
+static int getAt(int row, int col)
 {
 	if ((row < 1) || (row > 8))
 		return EMPTY;
 	if ((col < 1) || (col > 8))
 		return EMPTY;
-	return board[firstrow + row - 1][firstcol + col - 1];
+	return board[firstRow + row - 1][firstCol + col - 1];
 }
 
-int isBlank(int row, int col)
+static int isBlank(int row, int col)
 {
 	return (getAt(row, col) == EMPTY);
 }
 
-void putAt(int row, int col, int piece)
+static void putAt(int row, int col, int piece)
 {
 	if (piece == EMPTY) {
-		if (board[firstrow + row - 1][firstcol + col - 1] != EMPTY)
-			num_of_tiles--;
-		board[firstrow + row - 1][firstcol + col - 1] = piece;
+		if (board[firstRow + row - 1][firstCol + col - 1] != EMPTY)
+			numOfTiles--;
+		board[firstRow + row - 1][firstCol + col - 1] = piece;
 		return;
 	} else {
 		if (boardEmpty) {
 			boardEmpty = false;
-			firstrow = 7;
-			firstcol = 7;
-			lastrow = 7;
-			lastcol = 7;
-			num_of_tiles = 1;
-			board[firstrow][firstcol] = piece;
+			firstRow = 7;
+			firstCol = 7;
+			lastRow = 7;
+			lastCol = 7;
+			numOfTiles = 1;
+			board[firstRow][firstCol] = piece;
 			return;
 		}
 		if (row == 0) {
-			firstrow--;
+			firstRow--;
 			row++;
 		}
 		if (col == 0) {
-			firstcol--;
+			firstCol--;
 			col++;
 		}
 		if (row > getRowSize()) {
-			lastrow += row - getRowSize();
+			lastRow += row - getRowSize();
 		}
 		if (col > getColSize()) {
-			lastcol += col - getColSize();
+			lastCol += col - getColSize();
 		}
-		num_of_tiles++;
+		numOfTiles++;
 	}
-	board[firstrow + row - 1][firstcol + col - 1] = piece;
+	board[firstRow + row - 1][firstCol + col - 1] = piece;
+}
+
+static void switchPlayer()
+{
+	switch (wtm) {
+		case WHITE:
+			wtm = BLACK;
+	                break;
+		case BLACK:
+			wtm = WHITE;
+	                break;
+		default:
+			break;
+	                /* This should never happen */
+	}
+}
+
+static int canMoveDown(void)
+{
+	return (getRowSize() < 8);
+}
+
+static int canMoveRight()
+{
+	return (getColSize() < 8);
+}
+
+static int checkLine(int searchTileRow, int searchTileCol, int winner, int row, int col, char direction, char type)
+{
+	/*
+	 * type can be
+	 * h -> horizontal
+	 * v -> vertical
+	 * l -> loop
+	*/
+
+	int start_row = row;
+	int start_col = col;
+	int ix = 0;
+	const char *newDirection;
+	int tileFound = false;
+
+	newDirection = " uurllrddlrrlllduudrruddu";
+
+	if ((searchTileRow == row) && (searchTileCol == col)) {
+		tileFound = true;
+	}
+	for (; ;) {
+		/*
+		 * no line starts with a empty space
+		 * or we are out of range
+		*/
+		if (isBlank(row, col))
+			return false;
+		switch (direction) {
+			case 'u':
+				/* newDirection's first line */
+				ix = 0;
+		                break;
+			case 'd':
+				/* newDirection's second line */
+				ix = 6;
+		                break;
+			case 'l':
+				/* newDirection's third line */
+				ix = 12;
+		                break;
+			case 'r':
+				/* newDirection's fourth line */
+				ix = 18;
+		                break;
+			default:
+				break;
+		}
+		ix += getAt(row, col);
+		direction = newDirection[ix];
+		switch (direction) {
+			case 'u':
+				row--;
+		                break;
+			case 'd':
+				row++;
+		                break;
+			case 'l':
+				col--;
+		                break;
+			case 'r':
+				col++;
+		                break;
+			default:
+				break;
+		}
+		if ((searchTileRow == row) && (searchTileCol == col)) {
+			tileFound = true;
+		}
+		if ((type == 'h') && (col == 9)) {
+			return !winner || tileFound;
+		}
+		if ((type == 'v') && (row == 9)) {
+			return !winner || tileFound;
+		}
+		if ((row == start_row) && (col == start_col)) {
+			return type == 'l' && (!winner || tileFound);
+		}
+	}
+}
+
+static int isGameOver(void)
+{
+	int WhiteWins = false, BlackWins = false;
+
+	if (gameOver != NOPLAYER)
+		return gameOver;
+	if (numOfTiles < 4) {
+		gameOver = NOPLAYER;
+		return gameOver;
+	}
+
+	/* check loop wins */
+	int i, j;
+	for (i = 1; i < 8; i++) {
+		for (j = 1; j < 8; j++) {
+			switch (getAt(i, j)) {
+				case NW:
+					if (checkLine(0, 0, false, i, j, 'u', 'l')) BlackWins = true;
+			                break;
+				case SE:
+					if (checkLine(0, 0, false, i, j, 'u', 'l')) WhiteWins = true;
+			                break;
+				case EMPTY:
+				case NS:
+				case WE:
+				case NE:
+				case WS:
+					break;
+				default:
+					break;
+			                /* This should never happen */
+			}
+		}
+	}
+
+	if (WhiteWins && BlackWins) {
+		gameOver = whoDidLastMove();
+		return gameOver;
+	}
+	if (WhiteWins) {
+		gameOver = WHITE;
+		return gameOver;
+	}
+	if (BlackWins) {
+		gameOver = BLACK;
+		return gameOver;
+	}
+	return NOPLAYER;
 }
 
 void makeMove(char *move)
 {
-	int oldNotation;
 	int col, row, neighbor;
 	char direction;
 	int ohs_up = 0, ohs_down = 0, ohs_right = 0, ohs_left = 0,
 		eks_up = 0, eks_down = 0, eks_right = 0, eks_left = 0;
 
-	if (gameover != NOPLAYER); /* Game is over */
+	if (gameOver != NOPLAYER); /* Game is over */
 	if (strlen(move) != 3); /* invalid move */
 
 	/* move = move.toUpperCase(); */
@@ -643,184 +634,18 @@ void makeMove(char *move)
 	}
 	/* note that switchPlayer() _must_ come before isGameOver() */
 	switchPlayer();
-	isGameOver(); // updates the gameOver attribute
+	/* updates the gameOver attribute */
+	isGameOver();
 
 }
 
-void switchPlayer()
-{
-	switch (wtm) {
-		case WHITE:
-			wtm = BLACK;
-	                break;
-		case BLACK:
-			wtm = WHITE;
-	                break;
-		default:
-			break;
-	                /* This should never happen */
-	}
-}
 
-int checkLine(int searchTileRow, int searchTileCol, int winner, int row, int col, char direction, char type)
-{
-	// type can be _h_orizontal , _v_ertical, _l_oop
-
-	int start_row = row;
-	int start_col = col;
-	int ix = 0;
-	const char *newdir;
-	int tileFound = false;
-
-	newdir = " uurllrddlrrlllduudrruddu";
-
-	if ((searchTileRow == row) && (searchTileCol == col)) {
-		tileFound = true;
-	}
-	for (; ;) {
-		if (isBlank(row, col))
-			return false; // no line starts with a empty space
-		// or we are out of range
-		switch (direction) {
-			case 'u':
-				// newdir's first line
-				ix = 0;
-		                break;
-			case 'd':
-				// newdir's second line
-				ix = 6;
-		                break;
-			case 'l':
-				// newdir's third line
-				ix = 12;
-		                break;
-			case 'r':
-				// newdir's fourth line
-				ix = 18;
-		                break;
-			default:
-				break;
-		}
-		ix += getAt(row, col);
-		direction = newdir[ix];
-		switch (direction) {
-			case 'u':
-				row--;
-		                break;
-			case 'd':
-				row++;
-		                break;
-			case 'l':
-				col--;
-		                break;
-			case 'r':
-				col++;
-		                break;
-			default:
-				break;
-		}
-		if ((searchTileRow == row) && (searchTileCol == col)) {
-			tileFound = true;
-		}
-		if ((type == 'h') && (col == 9)) {
-			return !winner || tileFound;
-		}
-		if ((type == 'v') && (row == 9)) {
-			return !winner || tileFound;
-		}
-		if ((row == start_row) && (col == start_col)) {
-			return type == 'l' && (!winner || tileFound);
-		}
-	}
-}
-
-int isGameOver()
-{
-	int WhiteWins = false, BlackWins = false;
-	int sp;
-
-	if (gameover != NOPLAYER) return gameover;
-	if (num_of_tiles < 4) {
-		gameover = NOPLAYER;
-		return gameover;
-	}
-
-	// check for line win.
-	// check left-right line
-	if (getColSize() == 8) {
-		// check left-right line
-		for (int row = 1; row <= 8; row++) {
-			if (checkLine(0, 0, false, row, 1, 'r', 'h')) {
-				// Line win
-				sp = getAt(row, 1);
-				if (sp == NS || sp == NE || sp == ES)
-					BlackWins = true;
-				else
-					WhiteWins = true;
-			}
-		}
-	}
-	// check up-down line
-	if (getRowSize() == 8) {
-		for (int col = 1; col <= 8; col++) {
-			if (checkLine(0, 0, false, 1, col, 'd', 'v')) {
-				// Line win
-				sp = getAt(1, col);
-				if (sp == WE || sp == WS || sp == SE)
-					BlackWins = true;
-				else
-					WhiteWins = true;
-			}
-		}
-	}
-
-	// if (need_loop_check==true) {
-	// Now check loop wins
-	for (int i = 1; i < 8; i++) {
-		for (int j = 1; j < 8; j++) {
-			switch (getAt(i, j)) {
-				case NW:
-					if (checkLine(0, 0, false, i, j, 'u', 'l')) BlackWins = true;
-			                break;
-				case SE:
-					if (checkLine(0, 0, false, i, j, 'u', 'l')) WhiteWins = true;
-			                break;
-				case EMPTY:
-				case NS:
-				case WE:
-				case NE:
-				case WS:
-					break;
-				default:
-					break;
-			                /* This should never happen */
-			}
-		}
-	}
-	// }
-
-	if (WhiteWins && BlackWins) {
-		gameover = whoDidLastMove();
-		return gameover;
-	}
-	if (WhiteWins) {
-		gameover = WHITE;
-		return gameover;
-	}
-	if (BlackWins) {
-		gameover = BLACK;
-		return gameover;
-	}
-	return NOPLAYER;
-}
-
-
-int whoToMove()
+int whoToMove(void)
 {
 	return wtm;
 }
 
-int whoDidLastMove()
+int whoDidLastMove(void)
 {
 	if (boardEmpty)
 		return NOPLAYER;
@@ -831,61 +656,9 @@ int whoDidLastMove()
 			return WHITE;
 		default:
 			break;
-	                // This should never happen
+	                /* This should never happen */
 	}
-}
-
-int winnerTile(int row, int col)
-{
-	if (isGameOver() == NOPLAYER)
-		return false;
-	if (isGameOver() == DRAW)
-		return false;
-
-	if (getColSize() == 8) {
-		// check left-right line
-		for (int r = 1; r <= 8; r++) {
-			if (checkLine(row, col, true, r, 1, 'r', 'h')) return true;
-		}
-	}
-	// check up-down line
-	if (getRowSize() == 8) {
-		for (int c = 1; c <= 8; c++) {
-			if (checkLine(row, col, true, 1, c, 'd', 'v')) return true;
-		}
-	}
-	for (int i = 1; i < 8; i++) {
-		for (int j = 1; j < 8; j++) {
-			switch (getAt(i, j)) {
-				case NW:
-				case SE:
-					if (checkLine(row, col, true, i, j, 'u', 'l')) return true;
-			                break;
-				case EMPTY:
-				case NS:
-				case WE:
-				case NE:
-				case WS:
-					break;
-				default:
-					break;
-			                /* This should never happen */
-			}
-		}
-	}
-
-	return false;
-}
-
-
-int canMoveDown(void)
-{
-	return (getRowSize() < 8);
-}
-
-int canMoveRight()
-{
-	return (getColSize() < 8);
+	return NOPLAYER;
 }
 
 int forcedMove(int brow, int bcol)
@@ -946,6 +719,8 @@ int forcedMove(int brow, int bcol)
 			case 10:
 				piece = SE;
 		                break;
+			default:
+				break;
 		}
 	} else { // right==2
 		switch (black_up + 2 * black_down + 4 * black_left + 8 * black_right) {
@@ -967,6 +742,8 @@ int forcedMove(int brow, int bcol)
 			case 5:
 				piece = SE;
 		                break;
+			default:
+				break;
 		}
 	}
 	putAt(brow, bcol, piece);
@@ -976,169 +753,587 @@ int forcedMove(int brow, int bcol)
 	return forcedMove(brow, bcol + 1);
 }
 
-void updateLine(char colour, char entry, int row, int col)
+static int isLeftRightMirror()
 {
-	int theNum;
+	int piece, i, j, j2;
 
-	while (true) {
-		theNum = 0;
-		if (colour == 'w') theNum = 1024;
-		switch (entry) {
-			case 'w':
-				theNum += 512;
-		                break;
-			case 'e':
-				theNum += 256;
-		                break;
-			case 's':
-				theNum += 128;
-		                break;
-			case 'n':
-				theNum += 64;
-		                break;
-			default:
-				break;
-		                // This should never happen
-		}
-		switch (getAt(row, col)) {
-			case NS:
-				theNum += 32;
-		                break;
-			case WE:
-				theNum += 16;
-		                break;
-			case NW:
-				theNum += 8;
-		                break;
-			case NE:
-				theNum += 4;
-		                break;
-			case SW:
-				theNum += 2;
-		                break;
-			case SE:
-				theNum += 1;
-		                break;
-			default:
-				break;
-		                // This should never happen
-		}
-		switch (theNum) {
-			case 1024 + 512 + 16:
-				if (getAt(row, col + 1) == EMPTY) return;
-		                col++;
-		                break;
-			case 1024 + 512 + 8:
-				if (getAt(row - 1, col) == EMPTY) return;
-		                row--;
-		                entry = 's';
-		                break;
-			case 1024 + 512 + 2:
-				if (getAt(row + 1, col) == EMPTY) return;
-		                row++;
-		                entry = 'n';
-		                break;
-			case 1024 + 256 + 16:
-				if (getAt(row, col - 1) == EMPTY) return;
-		                col--;
-		                break;
-			case 1024 + 256 + 4:
-				if (getAt(row - 1, col) == EMPTY) return;
-		                row--;
-		                entry = 's';
-		                break;
-			case 1024 + 256 + 1:
-				if (getAt(row + 1, col) == EMPTY) return;
-		                row++;
-		                entry = 'n';
-		                break;
-			case 1024 + 128 + 32:
-				if (getAt(row - 1, col) == EMPTY) return;
-		                row--;
-		                break;
-			case 1024 + 128 + 2:
-				if (getAt(row, col - 1) == EMPTY) return;
-		                col--;
-		                entry = 'e';
-		                break;
-			case 1024 + 128 + 1:
-				if (getAt(row, col + 1) == EMPTY) return;
-		                col++;
-		                entry = 'w';
-		                break;
-			case 1024 + 64 + 32:
-				if (getAt(row + 1, col) == EMPTY) return;
-		                row++;
-		                break;
-			case 1024 + 64 + 8:
-				if (getAt(row, col - 1) == EMPTY) return;
-		                col--;
-		                entry = 'e';
-		                break;
-			case 1024 + 64 + 4:
-				if (getAt(row, col + 1) == EMPTY) return;
-		                col++;
-		                entry = 'w';
-		                break;
-			case 512 + 32:
-				if (getAt(row, col + 1) == EMPTY) return;
-		                col++;
-		                break;
-			case 512 + 4:
-				if (getAt(row + 1, col) == EMPTY) return;
-		                row++;
-		                entry = 'n';
-		                break;
-			case 512 + 1:
-				if (getAt(row - 1, col) == EMPTY) return;
-		                row--;
-		                entry = 's';
-		                break;
-			case 256 + 32:
-				if (getAt(row - 1, col) == EMPTY) return;
-		                row--;
-		                break;
-			case 256 + 8:
-				if (getAt(row, col + 1) == EMPTY) return;
-		                row++;
-		                entry = 'n';
-		                break;
-			case 256 + 2:
-				if (getAt(row - 1, col) == EMPTY) return;
-		                row--;
-		                entry = 's';
-		                break;
-			case 128 + 16:
-				if (getAt(row - 1, col) == EMPTY) return;
-		                row--;
-		                break;
-			case 128 + 8:
-				if (getAt(row, col + 1) == EMPTY) return;
-		                col++;
-		                entry = 'w';
-		                break;
-			case 128 + 4:
-				if (getAt(row, col - 1) == EMPTY) return;
-		                col--;
-		                entry = 'e';
-		                break;
-			case 64 + 16:
-				if (getAt(row + 1, col) == EMPTY) return;
-		                row++;
-		                break;
-			case 64 + 2:
-				if (getAt(row, col + 1) == EMPTY) return;
-		                col++;
-		                entry = 'w';
-		                break;
-			case 64 + 1:
-				if (getAt(row, col - 1) == EMPTY) return;
-		                col--;
-		                entry = 'e';
-		                break;
-			default:
-				break;
-		                /* This should never happen */
+	for (i = 1; i <= getRowSize(); i++) {
+		j2 = getColSize();
+		for (j = 1; j <= ((getColSize() + 1) / 2); j++) {
+			piece = getAt(i, j);
+			switch (getAt(i, j2)) {
+				case NW:
+					if (piece != NE)
+						return false;
+			                break;
+				case NE:
+					if (piece != NW)
+						return false;
+			                break;
+				case SW:
+					if (piece != SE)
+						return false;
+			                break;
+				case SE:
+					if (piece != SW)
+						return false;
+			                break;
+				case NS:
+					if (piece != NS)
+						return false;
+			                break;
+				case WE:
+					if (piece != WE)
+						return false;
+			                break;
+				case EMPTY:
+					if (piece != EMPTY)
+						return false;
+			                break;
+				default:
+					break;
+			}
+			j2--;
 		}
 	}
+	return true;
+}
+
+static int isRightLeftMirror()
+{
+	return isLeftRightMirror();
+}
+
+static int isUpDownMirror()
+{
+	int piece, i, j, i2;
+
+	i2 = getRowSize();
+	for (i = 1; i <= ((getRowSize() + 1) / 2); i++) {
+		for (j = 1; j <= getColSize(); j++) {
+			piece = getAt(i, j);
+			switch (getAt(i2, j)) {
+				case NW:
+					if (piece != SW)
+						return false;
+			                break;
+				case NE:
+					if (piece != SE)
+						return false;
+			                break;
+				case SW:
+					if (piece != NW)
+						return false;
+			                break;
+				case SE:
+					if (piece != NE)
+						return false;
+			                break;
+				case NS:
+					if (piece != NS)
+						return false;
+			                break;
+				case WE:
+					if (piece != WE)
+						return false;
+			                break;
+				case EMPTY:
+					if (piece != EMPTY)
+						return false;
+			                break;
+				default:
+					break;
+			}
+		}
+		i2--;
+	}
+	return true;
+}
+
+static int isDownUpMirror()
+{
+	return isUpDownMirror();
+}
+
+static int isRotateMirror()
+{
+	int i, j, piece, i2, j2;
+
+	i2 = getRowSize();
+	for (i = 1; i <= ((getRowSize() + 1) / 2); i++) {
+		j2 = getColSize();
+		for (j = 1; j <= getColSize(); j++) {
+			piece = getAt(i, j);
+			switch (getAt(i2, j2)) {
+				case NW:
+					if (piece != SE)
+						return false;
+			                break;
+				case NE:
+					if (piece != SW)
+						return false;
+			                break;
+				case SW:
+					if (piece != NE)
+						return false;
+			                break;
+				case SE:
+					if (piece != NW)
+						return false;
+			                break;
+				case NS:
+					if (piece != NS)
+						return false;
+			                break;
+				case WE:
+					if (piece != WE)
+						return false;
+			                break;
+				case EMPTY:
+					if (piece != EMPTY)
+						return false;
+			                break;
+				default:
+					break;
+			}
+			j2--;
+		}
+		i2--;
+	}
+	return true;
+}
+
+
+int uniqueMoves(int remove_mirror_moves, char **moves)
+{
+	/*
+	 * complex throw away a lot of equal moves
+	 * and symmetries (hopefully)
+	*/
+
+	int movesIndex = 0;
+
+	int i, j, k;
+	int dl, dr, ur, ul, rr, dd;
+	/* which neighbors - default all values 0 */
+	int neighbors[10][10];
+	int directionList[10][10][3];
+	/*
+	 * which directions for move
+	 * 0 -> /
+	 * 1 -> \
+	 * 2 -> +
+         * true means already used
+         * default all values false
+        */
+	int ohs_up, ohs_down, ohs_right, ohs_left, eks_up, eks_down, eks_right, eks_left;
+	int up, down, left, right;
+	int iBegin, jBegin, iEnd, jEnd;
+
+	int lrsym, udsym, rsym;
+
+	if (gameOver != NOPLAYER) {
+		return NULL;
+	}
+
+	if (boardEmpty) { // empty board only these two moves
+		strcpy(moves[movesIndex], "@0/");
+		movesIndex++;
+		strcpy(moves[movesIndex], ("@0+"));
+		movesIndex++;
+		return movesIndex;
+	}
+	if (getRowSize() * getColSize() == 1) {
+		switch (getAt(1, 1)) {
+			case NW:
+				strcpy(moves[movesIndex], "@1+");
+		                movesIndex++;
+		                strcpy(moves[movesIndex], "@1/");
+		                movesIndex++;
+		                strcpy(moves[movesIndex], "@1\\");
+		                movesIndex++;
+		                strcpy(moves[movesIndex], "E1+");
+		                movesIndex++;
+		                strcpy(moves[movesIndex], "E1/");
+		                movesIndex++;
+		                strcpy(moves[movesIndex], "E1\\");
+		                movesIndex++;
+		                if (!remove_mirror_moves) {
+			                strcpy(moves[movesIndex], "A0\\");
+			                movesIndex++;
+			                strcpy(moves[movesIndex], "A0/");
+			                movesIndex++;
+			                strcpy(moves[movesIndex], "A0+");
+			                movesIndex++;
+			                strcpy(moves[movesIndex], "A2/");
+			                movesIndex++;
+			                strcpy(moves[movesIndex], "A2\\");
+			                movesIndex++;
+			                strcpy(moves[movesIndex], "A2+");
+			                movesIndex++;
+		                }
+		                break;
+			case NS:
+				strcpy(moves[movesIndex], "@1+");
+		                movesIndex++;
+		                strcpy(moves[movesIndex], "@1/");
+		                movesIndex++;
+		                strcpy(moves[movesIndex], "A0/");
+		                movesIndex++;
+		                strcpy(moves[movesIndex], "A0+");
+		                movesIndex++;
+		                if (!remove_mirror_moves) {
+			                strcpy(moves[movesIndex], "@1\\");
+			                movesIndex++;
+			                strcpy(moves[movesIndex], "A0\\");
+			                movesIndex++;
+			                strcpy(moves[movesIndex], "E1/");
+			                movesIndex++;
+			                strcpy(moves[movesIndex], "E1\\");
+			                movesIndex++;
+			                strcpy(moves[movesIndex], "A2/");
+			                movesIndex++;
+			                strcpy(moves[movesIndex], "A2\\");
+			                movesIndex++;
+		                }
+		                break;
+			default:
+				/* This should never happen */
+				break;
+		}
+		return movesIndex;
+	}
+
+	for (i = 0; i < 10; i++)
+		for (j = 0; j < 10; j++)
+			for (k = 0; k < 3; k++)
+				directionList[i][j][k] = false;
+
+	lrsym = isLeftRightMirror();
+	udsym = isUpDownMirror();
+	rsym = isRotateMirror();
+	iBegin = (canMoveDown()) ? 0 : 1;
+	jBegin = (canMoveRight()) ? 0 : 1;
+	iEnd = (getRowSize() < 8) ? getRowSize() + 1 : 8;
+	jEnd = (getColSize() < 8) ? getColSize() + 1 : 8;
+	if (remove_mirror_moves) {
+		if (lrsym)
+			jEnd = (getColSize() + 1) / 2;
+		if (rsym || udsym)
+			iEnd = (getRowSize() + 1) / 2;
+	}
+
+	for (i = iBegin; i <= iEnd; i++) {
+		for (j = jBegin; j <= jEnd; j++) {
+			if (!(isBlank(i, j))) {
+				neighbors[i][j] = 0;
+			} else {
+				ohs_up = 0;
+				ohs_down = 0;
+				ohs_right = 0;
+				ohs_left = 0;
+				eks_up = 0;
+				eks_down = 0;
+				eks_right = 0;
+				eks_left = 0;
+				up = getAt(i - 1, j);
+				down = getAt(i + 1, j);
+				left = getAt(i, j - 1);
+				right = getAt(i, j + 1);
+
+				if (up == SN || up == SW || up == SE) {
+					ohs_up = 1;
+				} else if (up != EMPTY) {
+					eks_up = 1;
+				}
+
+				if (down == NS || down == NW || down == NE) {
+					ohs_down = 1;
+				} else if (down != EMPTY) {
+					eks_down = 1;
+				}
+
+				if (left == EN || left == ES || left == WE)
+					ohs_left = 1;
+				else if (left != EMPTY)
+					eks_left = 1;
+
+				if (right == WE || right == WS || right == WN)
+					ohs_right = 1;
+				else if (right != EMPTY)
+					eks_right = 1;
+
+				neighbors[i][j] = ohs_up + 2 * ohs_down + 4 * ohs_left
+				                  + 8 * ohs_right + 16 * eks_up + 32 * eks_down + 64
+				                                                                  * eks_left +
+				                  128 * eks_right;
+			}
+		}
+	}
+
+	for (i = iBegin; i <= iEnd; i++) {
+		for (j = jBegin; j <= jEnd; j++) {
+			if (neighbors[i][j] != 0) {
+				dl = getAt(i + 1, j - 1);
+				dr = getAt(i + 1, j + 1);
+				ur = getAt(i - 1, j + 1);
+				ul = getAt(i - 1, j - 1);
+				rr = getAt(i, j + 2);
+				dd = getAt(i + 2, j);
+				switch (neighbors[i][j]) {
+					case 1: {
+						if (ur == SW || ur == SE || ur == SN)
+							directionList[i][j + 1][0] = true;
+						if (dr == NS || dr == NW || dr == NE)
+							directionList[i][j + 1][1] = true;
+						if (rr == WS || rr == WE || rr == WN)
+							directionList[i][j + 1][2] = true;
+						if (dr == WN || dr == WS || dr == WE)
+							directionList[i + 1][j][1] = true;
+						if (dl == EW || dl == ES || dl == ES)
+							directionList[i + 1][j][0] = true;
+						break;
+					}
+					case 2: {
+						if (dr == NS || dr == NW || dr == NE)
+							directionList[i][j + 1][1] = true;
+						if (ur == SW || ur == SE || ur == SN)
+							directionList[i][j + 1][0] = true;
+						break;
+					}
+					case 4: {
+						if (dl == ES || dl == EN || dl == EW)
+							directionList[i + 1][j][0] = true;
+						if (dr == WN || dr == WS || dr == WE)
+							directionList[i + 1][j][1] = true;
+						if (ur == SW || ur == SN || ur == SE)
+							directionList[i][j + 1][0] = true;
+						if (dr == NS || dr == NE || dr == NW)
+							directionList[i][j + 1][1] = true;
+						if (dd == NW || dd == NE || dd == NS)
+							directionList[i + 1][j][2] = true;
+						break;
+					}
+					case 8: {
+						if (dl == ES || dl == EN || dl == EW)
+							directionList[i + 1][j][0] = true;
+						if (dr == WN || dr == WE || dr == WS)
+							directionList[i + 1][j][1] = true;
+						if (dd == NW || dd == NS || dd == NE)
+							directionList[i + 1][j][2] = true;
+						break;
+					}
+					case 16: {
+						if (ur == NW || ur == NE || ur == WE)
+							directionList[i][j + 1][0] = true;
+						if (dr == SW || dr == SE || dr == WE)
+							directionList[i][j + 1][1] = true;
+						if (rr == NE || rr == NS || rr == SE)
+							directionList[i][j + 1][2] = true;
+						if (dr == SE || dr == SN || dr == EN)
+							directionList[i + 1][j][1] = true;
+						if (dl == NW || dl == NS || dl == WS)
+							directionList[i + 1][j][0] = true;
+						break;
+					}
+					case 18:
+					case 33: {
+						if (rr != EMPTY) directionList[i][j + 1][2] = true;
+						if (dr != EMPTY || ur != EMPTY) {
+							directionList[i][j + 1][1] = true;
+							directionList[i][j + 1][0] = true;
+						}
+						directionList[i][j][2] = true;
+						break;
+					}
+					case 20:
+						if (rr != EMPTY)
+							directionList[i][j + 1][2] = true;
+				                directionList[i + 1][j][0] = true;
+				                directionList[i][j + 1][0] = true;
+				                directionList[i][j][0] = true;
+				                if (dd == NE || dd == NW || dd == NS)
+					                directionList[i + 1][j][2] = true;
+				                break;
+					case 65: {
+						if (rr != EMPTY)
+							directionList[i][j + 1][2] = true;
+						directionList[i + 1][j][0] = true;
+						directionList[i][j + 1][0] = true;
+						directionList[i][j][0] = true;
+						if (dd == SW || dd == SE || dd == WE)
+							directionList[i + 1][j][2] = true;
+						break;
+					}
+					case 24:
+					case 129: {
+						directionList[i + 1][j][1] = true;
+						directionList[i][j][1] = true;
+						break;
+					}
+					case 32: {
+						if (dr == SE || dr == SW || dr == EW)
+							directionList[i][j + 1][1] = true;
+						if (ur == NW || ur == NE || ur == WE)
+							directionList[i][j + 1][0] = true;
+						break;
+					}
+					case 36: {
+						directionList[i][j + 1][1] = true;
+						directionList[i][j][1] = true;
+						break;
+					}
+					case 40:
+					case 130: {
+						directionList[i][j][0] = true;
+						break;
+					}
+					case 64: {
+						if (dl == WN || dl == WS || dl == NS)
+							directionList[i + 1][j][0] = true;
+						if (dr == EN || dr == ES || dr == NS)
+							directionList[i + 1][j][1] = true;
+						if (ur == NW || ur == NE || ur == WE)
+							directionList[i][j + 1][0] = true;
+						if (dr == SE || dr == SW || dr == EW)
+							directionList[i][j + 1][1] = true;
+						if (dd == SW || dd == SE || dd == WE)
+							directionList[i + 1][j][2] = true;
+						break;
+					}
+					case 66: {
+						directionList[i][j + 1][1] = true;
+						directionList[i][j][1] = true;
+						break;
+					}
+					case 72:
+					case 132: {
+						if (dl != EMPTY || dr != EMPTY) {
+							directionList[i + 1][j][0] = true;
+							directionList[i + 1][j][1] = true;
+						}
+						if (dd != EMPTY) directionList[i + 1][j][2] = true;
+						directionList[i][j][2] = true;
+						break;
+					}
+					case 128: {
+						if (dl == WS || dl == WN || dl == SN)
+							directionList[i + 1][j][0] = true;
+						if (dr == EN || dr == ES || dr == NS)
+							directionList[i + 1][j][1] = true;
+						break;
+					}
+					default:
+						// This should never happen
+						break;
+				}
+			}
+		}
+	}
+
+	if (remove_mirror_moves) {
+		// remove left-right symmetry moves
+		if (lrsym && getColSize() % 2 == 1) {
+			for (i = iBegin; i <= iEnd; i++) {
+				directionList[i][jEnd][0] = true;
+			}
+		}
+		// remove up-down symmetry moves
+		if (udsym && getRowSize() % 2 == 1) {
+			for (j = jBegin; j <= jEnd; j++) {
+				directionList[iEnd][j][1] = true;
+			}
+		}
+	}
+
+	// collects the moves
+	for (i = iBegin; i <= iEnd; i++) {
+		for (j = jBegin; j <= jEnd; j++) {
+			// remove rotation symmetry moves
+			if (rsym && getRowSize() % 2 == 1) {
+				int jMiddle = (getColSize() + 1) / 2;
+				if (j > jMiddle && i == iEnd) {
+					continue;
+				}
+			}
+			if (neighbors[i][j] != 0) {
+				ohs_up = 0;
+				ohs_down = 0;
+				ohs_right = 0;
+				ohs_left = 0;
+				eks_up = 0;
+				eks_down = 0;
+				eks_right = 0;
+				eks_left = 0;
+				up = getAt(i - 1, j);
+				down = getAt(i + 1, j);
+				left = getAt(i, j - 1);
+				right = getAt(i, j + 1);
+
+				if (up == SN || up == SW || up == SE)
+					ohs_up = 1;
+				else if (up != EMPTY)
+					eks_up = 1;
+				if (down == NS || down == NW || down == NE)
+					ohs_down = 1;
+				else if (down != EMPTY)
+					eks_down = 1;
+				if (left == EN || left == ES || left == WE)
+					ohs_left = 1;
+				else if (left != EMPTY)
+					eks_left = 1;
+				if (right == WE || right == WS || right == WN)
+					ohs_right = 1;
+				else if (right != EMPTY)
+					eks_right = 1;
+
+				if (!directionList[i][j][0]) {
+					saveState();
+					if ((ohs_up + ohs_left > 0)
+					    || (eks_right + eks_down > 0))
+						putAt(i, j, NW);
+					if ((eks_up + eks_left > 0)
+					    || (ohs_right + ohs_down > 0))
+						putAt(i, j, SE);
+					if (forcedMove(i - 1, j) && forcedMove(i + 1, j)
+					    && forcedMove(i, j - 1) && forcedMove(i, j + 1)) {
+						getTraxString(i, j, moves[movesIndex], '/');
+						movesIndex++;
+					}
+					restoreState();
+				}
+				if (!directionList[i][j][1]) {
+					saveState();
+					if ((ohs_up + ohs_right > 0)
+					    || (eks_left + eks_down > 0))
+						putAt(i, j, NE);
+					if ((eks_up + eks_right > 0)
+					    || (ohs_left + ohs_down > 0))
+						putAt(i, j, SW);
+					if (forcedMove(i - 1, j) && forcedMove(i + 1, j)
+					    && forcedMove(i, j - 1) && forcedMove(i, j + 1)) {
+						getTraxString(i, j, moves[movesIndex], '\\');
+						movesIndex++;
+					}
+					restoreState();
+				}
+				if (!directionList[i][j][2]) {
+					saveState();
+					if ((ohs_up + ohs_down > 0)
+					    || (eks_left + eks_right > 0))
+						putAt(i, j, NS);
+					if ((eks_up + eks_down > 0)
+					    || (ohs_left + ohs_right > 0))
+						putAt(i, j, WE);
+					if (forcedMove(i - 1, j) && forcedMove(i + 1, j)
+					    && forcedMove(i, j - 1) && forcedMove(i, j + 1)) {
+						getTraxString(i, j, moves[movesIndex], '+');
+						movesIndex++;
+					}
+					restoreState();
+				}
+			}
+		}
+	}
+	return movesIndex;
 }

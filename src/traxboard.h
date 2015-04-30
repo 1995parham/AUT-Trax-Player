@@ -35,4 +35,16 @@
 #define NOPLAYER 3
 #define NORESULT 3
 
+void makeMove(char *move);
+
+int whoToMove(void);
+
+int whoDidLastMove(void);
+
+/*
+ * use array at least can contains
+ * 100 moves with 256 character
+*/
+int uniqueMoves(int remove_mirror_moves, char **moves);
+
 #endif

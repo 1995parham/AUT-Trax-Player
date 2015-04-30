@@ -12,4 +12,4 @@ set(SOURCE_FILES
     src/traxboard.h
     )
 
-add_executable(AUT_Trax_Player ${SOURCE_FILES})
+add_executable(AUT_Trax_Player ${SOURCE_FILES} src/traxmove.h src/traxmove.c)
