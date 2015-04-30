@@ -45,6 +45,6 @@ int whoDidLastMove(void);
  * use array at least can contains
  * 100 moves with 256 character
 */
-int uniqueMoves(int remove_mirror_moves, char **moves);
+int uniqueMoves(int remove_mirror_moves, char moves[][256]);
 
 #endif

@@ -12,7 +12,7 @@
  * Copyright (c) 2015 Parham Alvani.
 */
 #include <stdio.h>
-#include "string.h"
+#include <string.h>
 #include "game.h"
 
 int main(int argc, char *argv[])

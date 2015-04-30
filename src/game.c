@@ -21,7 +21,8 @@ void play(int player_no)
 	if (player_no == 1) {
 		while (whoToMove() != NOPLAYER) {
 			/* send move */
-			printf("Hello");
+			char moves[100][256];
+			int size = uniqueMoves(1, moves);
 			scanf("%s", move);
 			makeMove(move);
 		}

@@ -11,14 +11,16 @@
 /*
  * Copyright (c) 2015 Parham Alvani.
 */
-#include "string.h"
+#include <string.h>
+#include <stdio.h>
+
 #include "traxboard.h"
 #include "traxmove.h"
 
 #define false 0
 #define true 1
 
-static int boardEmpty;
+static int boardEmpty = 1;
 static int wtm;
 static int board[8][8];
 static int gameOver;
@@ -34,18 +36,13 @@ static char *border;
 
 static char *border_save;
 
-static int boardEmpty_save;
+static int boardEmpty_save = 1;
 static int wtm_save;
 static int board_save[8][8];
 static int gameOver_save;
 static int num_of_tiles_save;
 static int firstRow_save, lastRow_save, firstCol_save, lastCol_save;
 
-
-static int blank(int piece)
-{
-	return (piece == EMPTY);
-}
 
 static int getNumOfTiles(void)
 {
@@ -674,10 +671,10 @@ int forcedMove(int brow, int bcol)
 	// boolean result=true;
 	int neighbors = 0;
 
-	if (!blank(up)) neighbors++;
-	if (!blank(down)) neighbors++;
-	if (!blank(left)) neighbors++;
-	if (!blank(right)) neighbors++;
+	if (!up) neighbors++;
+	if (!down) neighbors++;
+	if (!left) neighbors++;
+	if (!right) neighbors++;
 
 	if (neighbors < 2) return true; // Less than two pieces bordering
 
@@ -799,11 +796,6 @@ static int isLeftRightMirror()
 	return true;
 }
 
-static int isRightLeftMirror()
-{
-	return isLeftRightMirror();
-}
-
 static int isUpDownMirror()
 {
 	int piece, i, j, i2;
@@ -848,11 +840,6 @@ static int isUpDownMirror()
 		i2--;
 	}
 	return true;
-}
-
-static int isDownUpMirror()
-{
-	return isUpDownMirror();
 }
 
 static int isRotateMirror()
@@ -904,7 +891,7 @@ static int isRotateMirror()
 }
 
 
-int uniqueMoves(int remove_mirror_moves, char **moves)
+int uniqueMoves(int remove_mirror_moves, char moves[][256])
 {
 	/*
 	 * complex throw away a lot of equal moves
@@ -914,7 +901,7 @@ int uniqueMoves(int remove_mirror_moves, char **moves)
 	int movesIndex = 0;
 
 	int i, j, k;
-	int dl, dr, ur, ul, rr, dd;
+	int dl, dr, ur, rr, dd;
 	/* which neighbors - default all values 0 */
 	int neighbors[10][10];
 	int directionList[10][10][3];
@@ -932,14 +919,15 @@ int uniqueMoves(int remove_mirror_moves, char **moves)
 
 	int lrsym, udsym, rsym;
 
-	if (gameOver != NOPLAYER) {
-		return NULL;
+	if (gameOver == NOPLAYER) {
+		return 0;
 	}
 
-	if (boardEmpty) { // empty board only these two moves
+	/* empty board only two moves */
+	if (boardEmpty) {
 		strcpy(moves[movesIndex], "@0/");
 		movesIndex++;
-		strcpy(moves[movesIndex], ("@0+"));
+		strcpy(moves[movesIndex], "@0+");
 		movesIndex++;
 		return movesIndex;
 	}
@@ -1077,7 +1065,7 @@ int uniqueMoves(int remove_mirror_moves, char **moves)
 				dl = getAt(i + 1, j - 1);
 				dr = getAt(i + 1, j + 1);
 				ur = getAt(i - 1, j + 1);
-				ul = getAt(i - 1, j - 1);
+				getAt(i - 1, j - 1);
 				rr = getAt(i, j + 2);
 				dd = getAt(i + 2, j);
 				switch (neighbors[i][j]) {
