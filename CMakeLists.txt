@@ -7,7 +7,6 @@ set(SOURCE_FILES
     src/game.c
     src/game.h
     src/main.c
-    src/string.h
     src/traxboard.c
     src/traxboard.h
     )

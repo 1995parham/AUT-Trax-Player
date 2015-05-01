@@ -35,7 +35,7 @@
 #define NOPLAYER 3
 #define NORESULT 3
 
-void makeMove(char *move);
+int makeMove(char *move);
 
 int whoToMove(void);
 

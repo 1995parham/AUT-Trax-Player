@@ -312,7 +312,7 @@ static int isGameOver(void)
 	return NOPLAYER;
 }
 
-void makeMove(char *move)
+int makeMove(char *move)
 {
 	int col, row, neighbor;
 	char direction;
@@ -331,13 +331,13 @@ void makeMove(char *move)
 			switchPlayer();
 			whiteCorners = 1;
 			blackCorners = 1;
-			return;
+			return 0;
 		}
 		if (!strcmp(move, "@0+")) {
 			putAt(1, 1, NS);
 			border = NULL;
 			switchPlayer();
-			return;
+			return 0;
 		}
 	}
 
@@ -346,10 +346,14 @@ void makeMove(char *move)
 
 	direction = move[2];
 
-	if (col == 0 && row == 0); /* No neighbours */
-	if ((row == 0) && (!canMoveDown())); /* illegal row */
-	if ((col == 0) && (!canMoveRight())); /* illegal column */
-	if (!isBlank(row, col)); /* occupy */
+	if (col == 0 && row == 0)
+		return -1; /* No neighbours */
+	if ((row == 0) && (!canMoveDown()))
+		return -1; /* illegal row */
+	if ((col == 0) && (!canMoveRight()))
+		return -1; /* illegal column */
+	if (!isBlank(row, col))
+		return -1; /* occupy */
 
 	saveState();
 	int up = getAt(row - 1, col), down = getAt(row + 1, col), left = getAt(row, col - 1), right = getAt(row,
@@ -368,6 +372,7 @@ void makeMove(char *move)
 
 	switch (neighbor) {
 		case 0:
+			return -1;
 		case 1:
 			switch (direction) {
 				case '/':
@@ -446,18 +451,13 @@ void makeMove(char *move)
 		case 18:
 			switch (direction) {
 				case '/':
-				case 'R':
 					putAt(row, col, SE);
 			                break;
 				case '\\':
-				case 'L':
-				case 'C':
 					putAt(row, col, SW);
 			                break;
 				case '+':
-				case 'S':
-				case 'U':
-				case 'D':
+					return -1;
 				default:
 					break;
 			                /* This should never happen */
@@ -466,17 +466,11 @@ void makeMove(char *move)
 		case 20:
 			switch (direction) {
 				case '/':
-				case 'L':
-				case 'U':
-					break;
+					return -1;
 				case '\\':
-				case 'C':
-				case 'R':
-				case 'D':
 					putAt(row, col, WS);
 			                break;
 				case '+':
-				case 'S':
 					putAt(row, col, WE);
 			                break;
 				default:
@@ -487,16 +481,10 @@ void makeMove(char *move)
 		case 24:
 			switch (direction) {
 				case '/':
-				case 'L':
-				case 'C':
-				case 'D':
 					putAt(row, col, SE);
 			                break;
-				case 'U':
 				case '\\':
-				case 'R':
-					break;
-				case 'S':
+					return -1;
 				case '+':
 					putAt(row, col, WE);
 			                break;
@@ -508,18 +496,11 @@ void makeMove(char *move)
 		case 32:
 			switch (direction) {
 				case '/':
-				case 'R':
 					putAt(row, col, NW);
 			                break;
-				case 'D':
-				case 'U':
-				case 'C':
-					break;
 				case '\\':
-				case 'L':
 					putAt(row, col, NE);
 			                break;
-				case 'S':
 				case '+':
 					putAt(row, col, WE);
 			                break;
@@ -531,108 +512,179 @@ void makeMove(char *move)
 		case 33:
 			switch (direction) {
 				case '/':
-				case 'L':
 					putAt(row, col, NW);
 			                break;
-				case 'R':
 				case '\\':
 					putAt(row, col, NE);
 			                break;
-				case 'C':
-				case 'S':
 				case '+':
-				case 'D':
-				case 'U':
-					break;
+					return -1;
 				default:
+					/* This should never happen */
 					break;
-			                /* This should never happen */
 			}
 	                break;
 		case 36:
-			if (direction == '/') putAt(row, col, NW);
-	                if (direction == '+') putAt(row, col, WE);
-	                if (direction == 'S') putAt(row, col, WE);
-	                if (direction == 'C') putAt(row, col, WN);
-	                if (direction == 'R') putAt(row, col, WN);
-	                if (direction == 'U') putAt(row, col, WN);
+			switch (direction) {
+				case '/':
+					putAt(row, col, NW);
+					break;
+				case '+':
+					putAt(row, col, WE);
+			                break;
+				case '\\':
+					return -1;
+				default:
+					/* This should never happen */
+					break;
+			}
 	                break;
 		case 40:
-			if (direction == '\\') putAt(row, col, EN);
-	                if (direction == '+') putAt(row, col, EW);
-	                if (direction == 'S') putAt(row, col, WE);
-	                if (direction == 'C') putAt(row, col, NE);
-	                if (direction == 'L') putAt(row, col, NE);
-	                if (direction == 'U') putAt(row, col, NE);
+			switch (direction) {
+				case '\\':
+					putAt(row, col, EN);
+					break;
+				case '+':
+					putAt(row, col, EW);
+					break;
+				case '/':
+					return -1;
+				default:
+					/* This should never happen */
+					break;
+			}
 	                break;
 		case 64:
-			if (direction == '/') putAt(row, col, ES);
-	                if (direction == '\\') putAt(row, col, EN);
-	                if (direction == '+') putAt(row, col, NS);
-	                if (direction == 'S') putAt(row, col, NS);
-	                if (direction == 'U') putAt(row, col, SE);
-	                if (direction == 'D') putAt(row, col, NE);
+			switch (direction) {
+				case '/':
+					putAt(row, col, ES);
+					break;
+				case '\\':
+					putAt(row, col, EN);
+					break;
+				case '+':
+					putAt(row, col, NS);
+					break;
+				default:
+					/* This should never happen */
+					break;
+			}
 	                break;
 		case 65:
-			if (direction == '\\') putAt(row, col, NE);
-	                if (direction == '+') putAt(row, col, NS);
-	                if (direction == 'S') putAt(row, col, NS);
-	                if (direction == 'C') putAt(row, col, NE);
-	                if (direction == 'R') putAt(row, col, NE);
-	                if (direction == 'D') putAt(row, col, NE);
+			switch (direction) {
+				case '\\':
+					putAt(row, col, NE);
+					break;
+				case '+':
+					putAt(row, col, NS);
+					break;
+				case '/':
+					return -1;
+				default:
+					/* This should never happen */
+					break;
+			}
 	                break;
 		case 66:
-			if (direction == '/') putAt(row, col, SE);
-	                if (direction == '+') putAt(row, col, SN);
-	                if (direction == 'S') putAt(row, col, SN);
-	                if (direction == 'C') putAt(row, col, SE);
-	                if (direction == 'R') putAt(row, col, SE);
-	                if (direction == 'U') putAt(row, col, SE);
+			switch (direction) {
+				case '/':
+					putAt(row, col, SE);
+					break;
+				case '+':
+					putAt(row, col, SN);
+					break;
+				case '\\':
+					return -1;
+				default:
+					/* This should never happen */
+					break;
+			}
 	                break;
 		case 72:
-			if (direction == '/') putAt(row, col, ES);
-	                if (direction == '\\') putAt(row, col, EN);
-	                if (direction == 'U') putAt(row, col, NE);
-	                if (direction == 'D') putAt(row, col, SE);
+			switch (direction) {
+				case '/':
+					putAt(row, col, ES);
+					break;
+				case '\\':
+					putAt(row, col, EN);
+					break;
+				case '+':
+					return -1;
+				default:
+					/* This should never happen */
+					break;
+			}
 	                break;
 		case 128:
-			if (direction == '/') putAt(row, col, WN);
-	                if (direction == '\\') putAt(row, col, WS);
-	                if (direction == '+') putAt(row, col, NS);
-	                if (direction == 'S') putAt(row, col, NS);
-	                if (direction == 'U') putAt(row, col, WS);
-	                if (direction == 'D') putAt(row, col, WN);
+			switch (direction) {
+				case '/':
+					putAt(row, col, WN);
+					break;
+				case '\\':
+					putAt(row, col, WS);
+					break;
+				case '+':
+					putAt(row, col, NS);
+					break;
+				default:
+					/* This should never happen */
+					break;
+			}
 	                break;
 		case 129:
-			if (direction == '/') putAt(row, col, NW);
-	                if (direction == '+') putAt(row, col, NS);
-	                if (direction == 'S') putAt(row, col, NS);
-	                if (direction == 'C') putAt(row, col, NW);
-	                if (direction == 'L') putAt(row, col, NW);
-	                if (direction == 'D') putAt(row, col, NW);
+			switch (direction) {
+				case '/':
+					putAt(row, col, NW);
+					break;
+				case '+':
+					putAt(row, col, NS);
+					break;
+				case '\\':
+					return -1;
+				default:
+					/* This should never happen */
+					break;
+			}
 	                break;
 		case 130:
-			if (direction == '\\') putAt(row, col, SW);
-	                if (direction == '+') putAt(row, col, SN);
-	                if (direction == 'S') putAt(row, col, SN);
-	                if (direction == 'C') putAt(row, col, SW);
-	                if (direction == 'L') putAt(row, col, SW);
-	                if (direction == 'U') putAt(row, col, SW);
+			switch (direction) {
+				case '\\':
+					putAt(row, col, SW);
+					break;
+				case '+':
+					putAt(row, col, SN);
+					break;
+				case '/':
+					return -1;
+				default:
+					/* This should never happen */
+					break;
+			}
 	                break;
 		case 132:
-			if (direction == '/') putAt(row, col, WN);
-	                if (direction == '\\') putAt(row, col, WS);
-	                if (direction == 'U') putAt(row, col, WN);
-	                if (direction == 'D') putAt(row, col, WS);
+			switch (direction) {
+				case '/':
+					putAt(row, col, WN);
+					break;
+				case '\\':
+					putAt(row, col, WS);
+					break;
+				case '+':
+					return -1;
+				default:
+					/* This should never happen */
+					break;
+			}
 	                break;
 		default:
+			/* This should never happen */
 			break;
-	                /* This should never happen */
 	}
 	/* note that switchPlayer() _must_ come before isGameOver() */
 	switchPlayer();
 	/* updates the gameOver attribute */
 	isGameOver();
+	return 0;
 
 }
 
