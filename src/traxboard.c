@@ -528,7 +528,7 @@ int makeMove(char *move)
 			switch (direction) {
 				case '/':
 					putAt(row, col, NW);
-					break;
+			                break;
 				case '+':
 					putAt(row, col, WE);
 			                break;
@@ -543,10 +543,10 @@ int makeMove(char *move)
 			switch (direction) {
 				case '\\':
 					putAt(row, col, EN);
-					break;
+			                break;
 				case '+':
 					putAt(row, col, EW);
-					break;
+			                break;
 				case '/':
 					return -1;
 				default:
@@ -558,13 +558,13 @@ int makeMove(char *move)
 			switch (direction) {
 				case '/':
 					putAt(row, col, ES);
-					break;
+			                break;
 				case '\\':
 					putAt(row, col, EN);
-					break;
+			                break;
 				case '+':
 					putAt(row, col, NS);
-					break;
+			                break;
 				default:
 					/* This should never happen */
 					break;
@@ -574,10 +574,10 @@ int makeMove(char *move)
 			switch (direction) {
 				case '\\':
 					putAt(row, col, NE);
-					break;
+			                break;
 				case '+':
 					putAt(row, col, NS);
-					break;
+			                break;
 				case '/':
 					return -1;
 				default:
@@ -589,10 +589,10 @@ int makeMove(char *move)
 			switch (direction) {
 				case '/':
 					putAt(row, col, SE);
-					break;
+			                break;
 				case '+':
 					putAt(row, col, SN);
-					break;
+			                break;
 				case '\\':
 					return -1;
 				default:
@@ -604,10 +604,10 @@ int makeMove(char *move)
 			switch (direction) {
 				case '/':
 					putAt(row, col, ES);
-					break;
+			                break;
 				case '\\':
 					putAt(row, col, EN);
-					break;
+			                break;
 				case '+':
 					return -1;
 				default:
@@ -619,13 +619,13 @@ int makeMove(char *move)
 			switch (direction) {
 				case '/':
 					putAt(row, col, WN);
-					break;
+			                break;
 				case '\\':
 					putAt(row, col, WS);
-					break;
+			                break;
 				case '+':
 					putAt(row, col, NS);
-					break;
+			                break;
 				default:
 					/* This should never happen */
 					break;
@@ -635,10 +635,10 @@ int makeMove(char *move)
 			switch (direction) {
 				case '/':
 					putAt(row, col, NW);
-					break;
+			                break;
 				case '+':
 					putAt(row, col, NS);
-					break;
+			                break;
 				case '\\':
 					return -1;
 				default:
@@ -650,10 +650,10 @@ int makeMove(char *move)
 			switch (direction) {
 				case '\\':
 					putAt(row, col, SW);
-					break;
+			                break;
 				case '+':
 					putAt(row, col, SN);
-					break;
+			                break;
 				case '/':
 					return -1;
 				default:
@@ -665,10 +665,10 @@ int makeMove(char *move)
 			switch (direction) {
 				case '/':
 					putAt(row, col, WN);
-					break;
+			                break;
 				case '\\':
 					putAt(row, col, WS);
-					break;
+			                break;
 				case '+':
 					return -1;
 				default:
