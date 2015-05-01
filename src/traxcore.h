@@ -35,7 +35,7 @@
 #define NOPLAYER 3
 #define NORESULT 3
 
-int makeMove(char *move);
+int makeMove(const char *move);
 
 int whoToMove(void);
 
@@ -44,6 +44,8 @@ int whoDidLastMove(void);
 void saveState(void);
 
 void restoreState(void);
+
+int isGameOver(void);
 
 /*
  * use array at least can contains

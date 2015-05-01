@@ -262,7 +262,7 @@ static int checkLine(int searchTileRow, int searchTileCol, int winner, int row, 
 	}
 }
 
-static int isGameOver(void)
+int isGameOver(void)
 {
 	int WhiteWins = false, BlackWins = false;
 
@@ -312,7 +312,7 @@ static int isGameOver(void)
 	return NOPLAYER;
 }
 
-int makeMove(char *move)
+int makeMove(const char *move)
 {
 	int col, row, neighbor;
 	char direction;
