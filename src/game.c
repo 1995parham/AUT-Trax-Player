@@ -14,15 +14,15 @@
 #include <stdio.h>
 #include "game.h"
 #include "traxcore.h"
+#include "AI.h"
 
 void play(int player_no)
 {
 	char move[256];
 	if (player_no == 1) {
 		while (whoToMove() != NOPLAYER) {
-			/* send move */
-			char moves[100][256];
-			int size = uniqueMoves(1, moves);
+			getRandomMove(move);
+			printf("%s\n", move);
 			scanf("%s", move);
 			makeMove(move);
 		}

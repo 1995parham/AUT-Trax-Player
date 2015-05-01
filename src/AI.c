@@ -69,5 +69,6 @@ void getRandomMove(char move[256])
 	char moves[100][256];
 
 	size = notBadMoves(moves);
+	strcpy(move, moves[0]);
 	/* return random moves */
 }
