@@ -13,7 +13,7 @@
 */
 #include <stdio.h>
 #include "game.h"
-#include "traxboard.h"
+#include "traxcore.h"
 
 void play(int player_no)
 {

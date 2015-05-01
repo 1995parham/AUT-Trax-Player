@@ -14,7 +14,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "traxboard.h"
+#include "traxcore.h"
 #include "traxmove.h"
 
 #define false 0
@@ -49,7 +49,7 @@ static int getNumOfTiles(void)
 	return numOfTiles;
 }
 
-static void saveState(void)
+void saveState(void)
 {
 	int i, j;
 
@@ -72,7 +72,7 @@ static void saveState(void)
 			board_save[i][j] = board[i][j];
 }
 
-static void restoreState(void)
+void restoreState(void)
 {
 	int i, j;
 
@@ -355,7 +355,6 @@ int makeMove(char *move)
 	if (!isBlank(row, col))
 		return -1; /* occupy */
 
-	saveState();
 	int up = getAt(row - 1, col), down = getAt(row + 1, col), left = getAt(row, col - 1), right = getAt(row,
 		col + 1);
 
@@ -688,7 +687,6 @@ int makeMove(char *move)
 
 }
 
-
 int whoToMove(void)
 {
 	return wtm;
@@ -710,7 +708,7 @@ int whoDidLastMove(void)
 	return NOPLAYER;
 }
 
-int forcedMove(int brow, int bcol)
+static int forcedMove(int brow, int bcol)
 {
 	if (!isBlank(brow, bcol)) return true;
 	if ((brow < 1) || (brow > 8) || (bcol < 1) || (bcol > 8)) return true;
@@ -720,7 +718,6 @@ int forcedMove(int brow, int bcol)
 	int left = getAt(brow, bcol - 1);
 	int right = getAt(brow, bcol + 1);
 
-	// boolean result=true;
 	int neighbors = 0;
 
 	if (!up) neighbors++;
@@ -728,7 +725,9 @@ int forcedMove(int brow, int bcol)
 	if (!left) neighbors++;
 	if (!right) neighbors++;
 
-	if (neighbors < 2) return true; // Less than two pieces bordering
+	if (neighbors < 2)
+		/* Less than two pieces bordering */
+		return true;
 
 	int white_up = 0, black_up = 0, white_down = 0, black_down = 0, white_left = 0, black_left = 0, white_right = 0, black_right = 0;
 
@@ -771,7 +770,7 @@ int forcedMove(int brow, int bcol)
 			default:
 				break;
 		}
-	} else { // right==2
+	} else {
 		switch (black_up + 2 * black_down + 4 * black_left + 8 * black_right) {
 			case 12:
 				piece = NS;
@@ -1264,7 +1263,7 @@ int uniqueMoves(int remove_mirror_moves, char moves[][256])
 						break;
 					}
 					default:
-						// This should never happen
+						/* This should never happen */
 						break;
 				}
 			}
@@ -1272,13 +1271,13 @@ int uniqueMoves(int remove_mirror_moves, char moves[][256])
 	}
 
 	if (remove_mirror_moves) {
-		// remove left-right symmetry moves
+		/* remove left-right symmetry moves */
 		if (lrsym && getColSize() % 2 == 1) {
 			for (i = iBegin; i <= iEnd; i++) {
 				directionList[i][jEnd][0] = true;
 			}
 		}
-		// remove up-down symmetry moves
+		/* remove up-down symmetry moves */
 		if (udsym && getRowSize() % 2 == 1) {
 			for (j = jBegin; j <= jEnd; j++) {
 				directionList[iEnd][j][1] = true;
@@ -1286,7 +1285,7 @@ int uniqueMoves(int remove_mirror_moves, char moves[][256])
 		}
 	}
 
-	// collects the moves
+	/* collects the moves */
 	for (i = iBegin; i <= iEnd; i++) {
 		for (j = jBegin; j <= jEnd; j++) {
 			// remove rotation symmetry moves

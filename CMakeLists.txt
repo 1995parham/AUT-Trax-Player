@@ -7,8 +7,8 @@ set(SOURCE_FILES
     src/game.c
     src/game.h
     src/main.c
-    src/traxboard.c
-    src/traxboard.h
+    src/traxcore.c
+    src/traxcore.h
     )
 
 add_executable(AUT_Trax_Player ${SOURCE_FILES} src/traxmove.h src/traxmove.c)

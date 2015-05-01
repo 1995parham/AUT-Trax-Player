@@ -41,6 +41,10 @@ int whoToMove(void);
 
 int whoDidLastMove(void);
 
+void saveState(void);
+
+void restoreState(void);
+
 /*
  * use array at least can contains
  * 100 moves with 256 character
