@@ -11,4 +11,4 @@ set(SOURCE_FILES
     src/traxcore.h
     )
 
-add_executable(AUT_Trax_Player ${SOURCE_FILES} src/traxmove.h src/traxmove.c src/AI.h src/AI.c)
+add_executable(AUT_Trax_Player ${SOURCE_FILES} src/traxmove.h src/traxmove.c src/AI.h src/AI.c src/limits.h)

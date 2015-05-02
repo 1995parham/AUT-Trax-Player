@@ -13,6 +13,7 @@
 */
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "traxcore.h"
 
 
@@ -31,6 +32,8 @@ static int notBadMoves(char result[][256])
 		return resultIndex;
 	}
 
+	for (movesIndex = 0; movesIndex < size; movesIndex++)
+		printf("%s\n", moves[movesIndex]);
 	/* start predicting moves */
 	saveState();
 	for (movesIndex = 0; movesIndex < size; movesIndex++) {

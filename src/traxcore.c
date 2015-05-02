@@ -16,13 +16,14 @@
 
 #include "traxcore.h"
 #include "traxmove.h"
+#include "limits.h"
 
 #define false 0
 #define true 1
 
 static int boardEmpty = 1;
 static int wtm;
-static int board[8][8];
+static int board[2 * BOARD_SIZE + 1][2 * BOARD_SIZE + 1];
 static int gameOver;
 static int numOfTiles;
 static int firstRow, lastRow, firstCol, lastCol;
@@ -38,7 +39,7 @@ static char *border_save;
 
 static int boardEmpty_save = 1;
 static int wtm_save;
-static int board_save[8][8];
+static int board_save[2 * BOARD_SIZE + 1][2 * BOARD_SIZE + 1];
 static int gameOver_save;
 static int num_of_tiles_save;
 static int firstRow_save, lastRow_save, firstCol_save, lastCol_save;
@@ -67,8 +68,8 @@ void saveState(void)
 	blackCorners_save = blackCorners;
 	border_save = border;
 
-	for (i = 0; i < 17; i++)
-		for (j = 0; j < 17; j++)
+	for (i = 0; i < 2 * BOARD_SIZE + 1; i++)
+		for (j = 0; j < 2 * BOARD_SIZE + 1; j++)
 			board_save[i][j] = board[i][j];
 }
 
@@ -90,8 +91,8 @@ void restoreState(void)
 	blackCorners = blackCorners_save;
 	border = border_save;
 
-	for (i = 0; i < 17; i++)
-		for (j = 0; j < 17; j++)
+	for (i = 0; i < 2 * BOARD_SIZE + 1; i++)
+		for (j = 0; j < 2 * BOARD_SIZE + 1; j++)
 			board[i][j] = board_save[i][j];
 
 }
@@ -108,9 +109,9 @@ int getColSize(void)
 
 static int getAt(int row, int col)
 {
-	if ((row < 1) || (row > 8))
+	if ((row < 1) || (row > BOARD_SIZE))
 		return EMPTY;
-	if ((col < 1) || (col > 8))
+	if ((col < 1) || (col > BOARD_SIZE))
 		return EMPTY;
 	return board[firstRow + row - 1][firstCol + col - 1];
 }
@@ -130,10 +131,10 @@ static void putAt(int row, int col, int piece)
 	} else {
 		if (boardEmpty) {
 			boardEmpty = false;
-			firstRow = 7;
-			firstCol = 7;
-			lastRow = 7;
-			lastCol = 7;
+			firstRow = BOARD_SIZE - 1;
+			firstCol = BOARD_SIZE - 1;
+			lastRow = BOARD_SIZE - 1;
+			lastCol = BOARD_SIZE - 1;
 			numOfTiles = 1;
 			board[firstRow][firstCol] = piece;
 			return;
@@ -174,12 +175,12 @@ static void switchPlayer()
 
 static int canMoveDown(void)
 {
-	return (getRowSize() < 8);
+	return (getRowSize() < BOARD_SIZE);
 }
 
 static int canMoveRight()
 {
-	return (getColSize() < 8);
+	return (getColSize() < BOARD_SIZE);
 }
 
 static int checkLine(int searchTileRow, int searchTileCol, int winner, int row, int col, char direction, char type)
@@ -250,10 +251,10 @@ static int checkLine(int searchTileRow, int searchTileCol, int winner, int row, 
 		if ((searchTileRow == row) && (searchTileCol == col)) {
 			tileFound = true;
 		}
-		if ((type == 'h') && (col == 9)) {
+		if ((type == 'h') && (col == BOARD_SIZE + 1)) {
 			return !winner || tileFound;
 		}
-		if ((type == 'v') && (row == 9)) {
+		if ((type == 'v') && (row == BOARD_SIZE + 1)) {
 			return !winner || tileFound;
 		}
 		if ((row == start_row) && (col == start_col)) {
@@ -275,8 +276,8 @@ int isGameOver(void)
 
 	/* check loop wins */
 	int i, j;
-	for (i = 1; i < 8; i++) {
-		for (j = 1; j < 8; j++) {
+	for (i = 1; i < BOARD_SIZE; i++) {
+		for (j = 1; j < BOARD_SIZE; j++) {
 			switch (getAt(i, j)) {
 				case NW:
 					if (checkLine(0, 0, false, i, j, 'u', 'l')) BlackWins = true;
@@ -320,7 +321,6 @@ int makeMove(const char *move)
 		eks_up = 0, eks_down = 0, eks_right = 0, eks_left = 0;
 
 	if (gameOver != NOPLAYER); /* Game is over */
-	if (strlen(move) != 3); /* invalid move */
 
 	/* move = move.toUpperCase(); */
 
@@ -341,6 +341,7 @@ int makeMove(const char *move)
 		}
 	}
 
+	/* parse move string */
 	col = move[0] - '@';
 	row = move[1] - '0';
 
@@ -371,6 +372,7 @@ int makeMove(const char *move)
 
 	switch (neighbor) {
 		case 0:
+			/* no neighbor error */
 			return -1;
 		case 1:
 			switch (direction) {
@@ -384,6 +386,7 @@ int makeMove(const char *move)
 					putAt(row, col, NS);
 			                break;
 				default:
+					/* This should never happen */
 					break;
 			}
 	                break;
@@ -399,6 +402,7 @@ int makeMove(const char *move)
 					putAt(row, col, NS);
 			                break;
 				default:
+					/* This should never happen */
 					break;
 			}
 	                break;
@@ -414,6 +418,7 @@ int makeMove(const char *move)
 					putAt(row, col, WE);
 			                break;
 				default:
+					/* This should never happen */
 					break;
 			}
 	                break;
@@ -429,6 +434,7 @@ int makeMove(const char *move)
 					putAt(row, col, EW);
 			                break;
 				default:
+					/* This should never happen */
 					break;
 			}
 	                break;
@@ -444,6 +450,7 @@ int makeMove(const char *move)
 					putAt(row, col, WE);
 			                break;
 				default:
+					/* This should never happen */
 					break;
 			}
 	                break;
@@ -458,8 +465,8 @@ int makeMove(const char *move)
 				case '+':
 					return -1;
 				default:
+					/* This should never happen */
 					break;
-			                /* This should never happen */
 			}
 	                break;
 		case 20:
@@ -473,8 +480,8 @@ int makeMove(const char *move)
 					putAt(row, col, WE);
 			                break;
 				default:
+					/* This should never happen */
 					break;
-			                /* This should never happen */
 			}
 	                break;
 		case 24:
@@ -711,7 +718,7 @@ int whoDidLastMove(void)
 static int forcedMove(int brow, int bcol)
 {
 	if (!isBlank(brow, bcol)) return true;
-	if ((brow < 1) || (brow > 8) || (bcol < 1) || (bcol > 8)) return true;
+	if ((brow < 1) || (brow > BOARD_SIZE) || (bcol < 1) || (bcol > BOARD_SIZE)) return true;
 
 	int up = getAt(brow - 1, bcol);
 	int down = getAt(brow + 1, bcol);
@@ -954,8 +961,8 @@ int uniqueMoves(int remove_mirror_moves, char moves[][256])
 	int i, j, k;
 	int dl, dr, ur, rr, dd;
 	/* which neighbors - default all values 0 */
-	int neighbors[10][10];
-	int directionList[10][10][3];
+	int neighbors[BOARD_SIZE + 2][BOARD_SIZE + 2];
+	int directionList[BOARD_SIZE + 2][BOARD_SIZE + 2][3];
 	/*
 	 * which directions for move
 	 * 0 -> /
@@ -1043,8 +1050,8 @@ int uniqueMoves(int remove_mirror_moves, char moves[][256])
 		return movesIndex;
 	}
 
-	for (i = 0; i < 10; i++)
-		for (j = 0; j < 10; j++)
+	for (i = 0; i < BOARD_SIZE + 2; i++)
+		for (j = 0; j < BOARD_SIZE + 2; j++)
 			for (k = 0; k < 3; k++)
 				directionList[i][j][k] = false;
 
@@ -1053,8 +1060,8 @@ int uniqueMoves(int remove_mirror_moves, char moves[][256])
 	rsym = isRotateMirror();
 	iBegin = (canMoveDown()) ? 0 : 1;
 	jBegin = (canMoveRight()) ? 0 : 1;
-	iEnd = (getRowSize() < 8) ? getRowSize() + 1 : 8;
-	jEnd = (getColSize() < 8) ? getColSize() + 1 : 8;
+	iEnd = (getRowSize() < BOARD_SIZE) ? getRowSize() + 1 : BOARD_SIZE;
+	jEnd = (getColSize() < BOARD_SIZE) ? getColSize() + 1 : BOARD_SIZE;
 	if (remove_mirror_moves) {
 		if (lrsym)
 			jEnd = (getColSize() + 1) / 2;
@@ -1103,8 +1110,8 @@ int uniqueMoves(int remove_mirror_moves, char moves[][256])
 					eks_right = 1;
 
 				neighbors[i][j] = ohs_up + 2 * ohs_down + 4 * ohs_left
-				                  + 8 * ohs_right + 16 * eks_up + 32 * eks_down + 64
-				                                                                  * eks_left +
+				                  + 8 * ohs_right + 16 * eks_up +
+				                  32 * eks_down + 64 * eks_left +
 				                  128 * eks_right;
 			}
 		}
