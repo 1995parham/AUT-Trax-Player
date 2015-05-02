@@ -342,10 +342,7 @@ int makeMove(const char *move)
 	}
 
 	/* parse move string */
-	col = move[0] - '@';
-	row = move[1] - '0';
-
-	direction = move[2];
+	getTraxMoveDefinition(&row, &col, move, &direction);
 
 	if (col == 0 && row == 0)
 		return -1; /* No neighbours */
@@ -1343,7 +1340,7 @@ int uniqueMoves(int remove_mirror_moves, char moves[][256])
 						putAt(i, j, SE);
 					if (forcedMove(i - 1, j) && forcedMove(i + 1, j)
 					    && forcedMove(i, j - 1) && forcedMove(i, j + 1)) {
-						getTraxString(i, j, moves[movesIndex], '/');
+						getTraxMoveString(i, j, moves[movesIndex], '/');
 						movesIndex++;
 					}
 					restoreState();
@@ -1358,7 +1355,7 @@ int uniqueMoves(int remove_mirror_moves, char moves[][256])
 						putAt(i, j, SW);
 					if (forcedMove(i - 1, j) && forcedMove(i + 1, j)
 					    && forcedMove(i, j - 1) && forcedMove(i, j + 1)) {
-						getTraxString(i, j, moves[movesIndex], '\\');
+						getTraxMoveString(i, j, moves[movesIndex], '\\');
 						movesIndex++;
 					}
 					restoreState();
@@ -1373,7 +1370,7 @@ int uniqueMoves(int remove_mirror_moves, char moves[][256])
 						putAt(i, j, WE);
 					if (forcedMove(i - 1, j) && forcedMove(i + 1, j)
 					    && forcedMove(i, j - 1) && forcedMove(i, j + 1)) {
-						getTraxString(i, j, moves[movesIndex], '+');
+						getTraxMoveString(i, j, moves[movesIndex], '+');
 						movesIndex++;
 					}
 					restoreState();

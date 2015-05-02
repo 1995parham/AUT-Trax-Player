@@ -11,12 +11,29 @@
 /*
  * Copyright (c) 2015 Parham Alvani.
 */
+#include <ctype.h>
+#include <stdlib.h>
 #include "traxmove.h"
 
-void getTraxString(int i, int j, char *aMove, char direction)
+void getTraxMoveString(int i, int j, char *aMove, char direction)
 {
 	aMove[0] = (char) (i + '@');
 	aMove[1] = (char) (j + '0');
 	aMove[2] = direction;
 	aMove[3] = 0;
+}
+
+void getTraxMoveDefinition(int *i, int *j, const char *aMove, char *direction)
+{
+	*i = 0;
+	do {
+		char ch = *aMove++;
+		*i = *i * 26 + ch - '@';
+	} while (isalpha(*aMove));
+
+	*j = atoi(aMove);
+	while (isdigit(*aMove))
+		aMove++;
+
+	*direction = *aMove;
 }

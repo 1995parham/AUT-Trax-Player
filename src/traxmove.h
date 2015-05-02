@@ -14,6 +14,12 @@
 #ifndef TRAXMOVE_H
 #define TRAXMOVE_H
 
-void getTraxString(int i, int j, char *aMove, char direction);
+void getTraxMoveString(int i, int j, char *aMove, char direction);
+
+/*
+ * convert a trax move string into
+ * i (row number), j (column number) and direction (tile type)
+*/
+void getTraxMoveDefinition(int *i, int *j, const char *aMove, char *direction);
 
 #endif
