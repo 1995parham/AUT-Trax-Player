@@ -23,6 +23,7 @@ void play(int player_no)
 		while (whoToMove() != NOPLAYER) {
 			getRandomMove(move);
 			printf("%s\n", move);
+			makeMove(move);
 			scanf("%s", move);
 			makeMove(move);
 		}

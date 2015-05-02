@@ -12,6 +12,7 @@
  * Copyright (c) 2015 Parham Alvani.
 */
 #include <string.h>
+#include <stdlib.h>
 #include "traxcore.h"
 
 
@@ -24,13 +25,19 @@ static int notBadMoves(char result[][256])
 	char moves[100][256];
 
 	size = uniqueMoves(1, moves);
-	if (size == 1); /* return moves */
+	if (size == 1) {
+		strcpy(result[resultIndex], moves[0]);
+		resultIndex++;
+		return resultIndex;
+	}
 
 	/* start predicting moves */
-
+	saveState();
 	for (movesIndex = 0; movesIndex < size; movesIndex++) {
 		const char *move = moves[movesIndex];
-		makeMove(move);
+
+		if (makeMove(move) < 0)
+			continue;
 
 		int gameOverValue = isGameOver();
 		switch (gameOverValue) {
@@ -40,6 +47,7 @@ static int notBadMoves(char result[][256])
 				if (whoDidLastMove() == gameOverValue) {
 					strcpy(result[resultIndex], move);
 					resultIndex++;
+					restoreState();
 					return resultIndex;
 				}
 		                /* Losing move found */
@@ -59,16 +67,16 @@ static int notBadMoves(char result[][256])
 		strcpy(result[resultIndex], moves[0]);
 		resultIndex++;
 	}
+	restoreState();
 	return resultIndex;
 }
 
 void getRandomMove(char move[256])
 {
 	int losingMoves = 0;
-	int size;
 	char moves[100][256];
 
-	size = notBadMoves(moves);
-	strcpy(move, moves[0]);
+	losingMoves = notBadMoves(moves);
+	strcpy(move, moves[rand() % losingMoves]);
 	/* return random moves */
 }
