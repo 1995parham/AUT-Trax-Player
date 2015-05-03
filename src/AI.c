@@ -32,11 +32,13 @@ static int notBadMoves(char result[][256])
 		return resultIndex;
 	}
 
+	/* print all moves for debugging purpose only */
 	for (movesIndex = 0; movesIndex < size; movesIndex++)
 		printf("%s\n", moves[movesIndex]);
+
 	/* start predicting moves */
-	saveState();
 	for (movesIndex = 0; movesIndex < size; movesIndex++) {
+		saveState();
 		const char *move = moves[movesIndex];
 
 		if (makeMove(move) < 0)
@@ -64,13 +66,13 @@ static int notBadMoves(char result[][256])
 				/* This should never happen */
 				break;
 		}
+		restoreState();
 	}
 	/* There are only bad moves ... :-(((( */
 	if (resultIndex == 0) {
 		strcpy(result[resultIndex], moves[0]);
 		resultIndex++;
 	}
-	restoreState();
 	return resultIndex;
 }
 
