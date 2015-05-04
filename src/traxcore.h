@@ -11,6 +11,8 @@
 /*
  * Copyright (c) 2015 Parham Alvani.
 */
+#include "limits.h"
+
 #ifndef TRAXBOARD_H
 #define TRAXBOARD_H
 
@@ -34,6 +36,17 @@
 #define DRAW 2
 #define NOPLAYER 3
 #define NORESULT 3
+
+
+struct trax_game {
+	int boardEmpty;
+	int wtm;
+	int board[2 * BOARD_SIZE + 1][2 * BOARD_SIZE + 1];
+	int gameOver;
+	int numOfTiles;
+	int firstRow, lastRow, firstCol, lastCol;
+
+};
 
 int makeMove(const char *move);
 

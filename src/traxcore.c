@@ -12,14 +12,18 @@
  * Copyright (c) 2015 Parham Alvani.
 */
 #include <string.h>
-#include <stdio.h>
 
 #include "traxcore.h"
 #include "traxmove.h"
-#include "limits.h"
 
 #define false 0
 #define true 1
+
+static struct trax_game current = {
+	.boardEmpty = 1,
+	.wtm = WHITE,
+	.gameOver = NOPLAYER,
+};
 
 static int boardEmpty = 1;
 static int wtm = WHITE;
@@ -27,15 +31,6 @@ static int board[2 * BOARD_SIZE + 1][2 * BOARD_SIZE + 1];
 static int gameOver = NOPLAYER;
 static int numOfTiles;
 static int firstRow, lastRow, firstCol, lastCol;
-
-static int whiteCorners, blackCorners;
-static int whiteThreats, blackThreats;
-static int whiteThreats_save, blackThreats_save;
-static int whiteCorners_save, blackCorners_save;
-
-static char *border;
-
-static char *border_save;
 
 static int boardEmpty_save = 1;
 static int wtm_save;
@@ -62,11 +57,6 @@ void saveState(void)
 	firstCol_save = firstCol;
 	lastRow_save = lastRow;
 	lastCol_save = lastCol;
-	whiteThreats_save = whiteThreats;
-	blackThreats_save = blackThreats;
-	whiteCorners_save = whiteCorners;
-	blackCorners_save = blackCorners;
-	border_save = border;
 
 	for (i = 0; i < 2 * BOARD_SIZE + 1; i++)
 		for (j = 0; j < 2 * BOARD_SIZE + 1; j++)
@@ -85,11 +75,6 @@ void restoreState(void)
 	firstCol = firstCol_save;
 	lastRow = lastRow_save;
 	lastCol = lastCol_save;
-	whiteThreats = whiteThreats_save;
-	blackThreats = blackThreats_save;
-	whiteCorners = whiteCorners_save;
-	blackCorners = blackCorners_save;
-	border = border_save;
 
 	for (i = 0; i < 2 * BOARD_SIZE + 1; i++)
 		for (j = 0; j < 2 * BOARD_SIZE + 1; j++)
@@ -317,15 +302,11 @@ int makeMove(const char *move)
 	if (boardEmpty) {
 		if (!strcmp(move, "@0/")) {
 			putAt(1, 1, NW);
-			border = NULL;
 			switchPlayer();
-			whiteCorners = 1;
-			blackCorners = 1;
 			return 0;
 		}
 		if (!strcmp(move, "@0+")) {
 			putAt(1, 1, NS);
-			border = NULL;
 			switchPlayer();
 			return 0;
 		}
