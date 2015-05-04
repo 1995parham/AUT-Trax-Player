@@ -25,71 +25,33 @@ static struct trax_game current = {
 	.gameOver = NOPLAYER,
 };
 
-static int boardEmpty = 1;
-static int wtm = WHITE;
-static int board[2 * BOARD_SIZE + 1][2 * BOARD_SIZE + 1];
-static int gameOver = NOPLAYER;
-static int numOfTiles;
-static int firstRow, lastRow, firstCol, lastCol;
-
-static int boardEmpty_save = 1;
-static int wtm_save;
-static int board_save[2 * BOARD_SIZE + 1][2 * BOARD_SIZE + 1];
-static int gameOver_save;
-static int num_of_tiles_save;
-static int firstRow_save, lastRow_save, firstCol_save, lastCol_save;
-
+static struct trax_game save;
 
 static int getNumOfTiles(void)
 {
-	return numOfTiles;
+	return current.numOfTiles;
 }
 
 void saveState(void)
 {
-	int i, j;
-
-	wtm_save = wtm;
-	boardEmpty_save = boardEmpty;
-	gameOver_save = gameOver;
-	num_of_tiles_save = numOfTiles;
-	firstRow_save = firstRow;
-	firstCol_save = firstCol;
-	lastRow_save = lastRow;
-	lastCol_save = lastCol;
-
-	for (i = 0; i < 2 * BOARD_SIZE + 1; i++)
-		for (j = 0; j < 2 * BOARD_SIZE + 1; j++)
-			board_save[i][j] = board[i][j];
+	save = current;
 }
 
 void restoreState(void)
 {
-	int i, j;
-
-	wtm = wtm_save;
-	boardEmpty = boardEmpty_save;
-	gameOver = gameOver_save;
-	numOfTiles = num_of_tiles_save;
-	firstRow = firstRow_save;
-	firstCol = firstCol_save;
-	lastRow = lastRow_save;
-	lastCol = lastCol_save;
-
-	for (i = 0; i < 2 * BOARD_SIZE + 1; i++)
-		for (j = 0; j < 2 * BOARD_SIZE + 1; j++)
-			board[i][j] = board_save[i][j];
-
+	current = save;
 }
 
 int getRowSize(void)
 {
-	return ((getNumOfTiles() == 0) ? 0 : 1 + (lastRow - firstRow));
+	return ((getNumOfTiles() == 0) ? 0 : 1 + (current.lastRow -
+	                                          current.firstRow));
 }
 
 int getColSize(void)
 {
-	return ((getNumOfTiles() == 0) ? 0 : 1 + (lastCol - firstCol));
+	return ((getNumOfTiles() == 0) ? 0 : 1 + (current.lastCol -
+	                                          current.firstCol));
 }
 
 static int getAt(int row, int col)
@@ -98,7 +60,8 @@ static int getAt(int row, int col)
 		return EMPTY;
 	if ((col < 1) || (col > BOARD_SIZE))
 		return EMPTY;
-	return board[firstRow + row - 1][firstCol + col - 1];
+	return current.board[current.firstRow + row - 1][current.firstCol +
+	                                                 col - 1];
 }
 
 static int isBlank(int row, int col)
@@ -109,48 +72,51 @@ static int isBlank(int row, int col)
 static void putAt(int row, int col, int piece)
 {
 	if (piece == EMPTY) {
-		if (board[firstRow + row - 1][firstCol + col - 1] != EMPTY)
-			numOfTiles--;
-		board[firstRow + row - 1][firstCol + col - 1] = piece;
+		if (current.board[current.firstRow + row - 1][current.firstCol +
+		                                              col - 1] != EMPTY)
+			current.numOfTiles--;
+		current.board[current.firstRow + row - 1][current.firstCol +
+		                                          col - 1] = piece;
 		return;
 	} else {
-		if (boardEmpty) {
-			boardEmpty = false;
-			firstRow = BOARD_SIZE - 1;
-			firstCol = BOARD_SIZE - 1;
-			lastRow = BOARD_SIZE - 1;
-			lastCol = BOARD_SIZE - 1;
-			numOfTiles = 1;
-			board[firstRow][firstCol] = piece;
+		if (current.boardEmpty) {
+			current.boardEmpty = false;
+			current.firstRow = BOARD_SIZE - 1;
+			current.firstCol = BOARD_SIZE - 1;
+			current.lastRow = BOARD_SIZE - 1;
+			current.lastCol = BOARD_SIZE - 1;
+			current.numOfTiles = 1;
+			current.board[current.firstRow][current.firstCol] = piece;
 			return;
 		}
 		if (row == 0) {
-			firstRow--;
+			current.firstRow--;
 			row++;
 		}
 		if (col == 0) {
-			firstCol--;
+			current.firstCol--;
 			col++;
 		}
 		if (row > getRowSize()) {
-			lastRow += row - getRowSize();
+			current.lastRow += row - getRowSize();
 		}
 		if (col > getColSize()) {
-			lastCol += col - getColSize();
+			current.lastCol += col - getColSize();
 		}
-		numOfTiles++;
+		current.numOfTiles++;
 	}
-	board[firstRow + row - 1][firstCol + col - 1] = piece;
+	current.board[current.firstRow + row - 1][current.firstCol + col -
+	                                          1] = piece;
 }
 
 static void switchPlayer()
 {
-	switch (wtm) {
+	switch (current.wtm) {
 		case WHITE:
-			wtm = BLACK;
+			current.wtm = BLACK;
 	                break;
 		case BLACK:
-			wtm = WHITE;
+			current.wtm = WHITE;
 	                break;
 		default:
 			break;
@@ -240,11 +206,11 @@ int isGameOver(void)
 {
 	int WhiteWins = false, BlackWins = false;
 
-	if (gameOver != NOPLAYER)
-		return gameOver;
-	if (numOfTiles < 4) {
-		gameOver = NOPLAYER;
-		return gameOver;
+	if (current.gameOver != NOPLAYER)
+		return current.gameOver;
+	if (current.numOfTiles < 4) {
+		current.gameOver = NOPLAYER;
+		return current.gameOver;
 	}
 
 	/* check loop wins */
@@ -274,16 +240,16 @@ int isGameOver(void)
 	}
 
 	if (WhiteWins && BlackWins) {
-		gameOver = whoDidLastMove();
-		return gameOver;
+		current.gameOver = whoDidLastMove();
+		return current.gameOver;
 	}
 	if (WhiteWins) {
-		gameOver = WHITE;
-		return gameOver;
+		current.gameOver = WHITE;
+		return current.gameOver;
 	}
 	if (BlackWins) {
-		gameOver = BLACK;
-		return gameOver;
+		current.gameOver = BLACK;
+		return current.gameOver;
 	}
 	return NOPLAYER;
 }
@@ -295,11 +261,11 @@ int makeMove(const char *move)
 	int ohs_up = 0, ohs_down = 0, ohs_right = 0, ohs_left = 0,
 		eks_up = 0, eks_down = 0, eks_right = 0, eks_left = 0;
 
-	if (gameOver != NOPLAYER); /* Game is over */
+	if (current.gameOver != NOPLAYER); /* Game is over */
 
 	/* move = move.toUpperCase(); */
 
-	if (boardEmpty) {
+	if (current.boardEmpty) {
 		if (!strcmp(move, "@0/")) {
 			putAt(1, 1, NW);
 			switchPlayer();
@@ -666,14 +632,14 @@ int makeMove(const char *move)
 
 int whoToMove(void)
 {
-	return wtm;
+	return current.wtm;
 }
 
 int whoDidLastMove(void)
 {
-	if (boardEmpty)
+	if (current.boardEmpty)
 		return NOPLAYER;
-	switch (wtm) {
+	switch (current.wtm) {
 		case WHITE:
 			return BLACK;
 		case BLACK:
@@ -951,12 +917,12 @@ int uniqueMoves(int remove_mirror_moves, char moves[][256])
 
 	int lrsym, udsym, rsym;
 
-	if (gameOver != NOPLAYER) {
+	if (current.gameOver != NOPLAYER) {
 		return 0;
 	}
 
 	/* empty board only two moves */
-	if (boardEmpty) {
+	if (current.boardEmpty) {
 		strcpy(moves[movesIndex], "@0/");
 		movesIndex++;
 		strcpy(moves[movesIndex], "@0+");
