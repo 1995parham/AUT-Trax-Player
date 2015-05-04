@@ -14,6 +14,7 @@
 #ifndef LIMITS_H
 #define LIMITS_H
 
-#define BOARD_SIZE 256
+#define BOARD_SIZE 512
+#define STACK_SIZE 2
 
 #endif

@@ -14,6 +14,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 #include "traxcore.h"
 
 
@@ -33,9 +34,10 @@ static int notBadMoves(char result[][256])
 	}
 
 	/* print all moves for debugging purpose only */
-
+#ifdef DEBUG
 	for (movesIndex = 0; movesIndex < size; movesIndex++)
 		printf("%s\n", moves[movesIndex]);
+#endif
 
 
 	/* start predicting moves */
@@ -52,8 +54,9 @@ static int notBadMoves(char result[][256])
 			case BLACK:
 				/* Winning move found */
 				if (whoDidLastMove() == gameOverValue) {
-					printf("Winning move found: %s\n",
-						move);
+#ifdef DEBUG
+					printf("Wining move found\n");
+#endif
 					resultIndex = 0;
 					strcpy(result[resultIndex], move);
 					resultIndex++;
@@ -86,6 +89,7 @@ void getRandomMove(char move[256])
 	int goodMoves = 0;
 	char moves[100][256];
 
+	srand((unsigned int) time(NULL));
 	goodMoves = notBadMoves(moves);
 	if (goodMoves > 1)
 		strcpy(move, moves[rand() % goodMoves]);
