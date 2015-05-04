@@ -33,8 +33,10 @@ static int notBadMoves(char result[][256])
 	}
 
 	/* print all moves for debugging purpose only */
+
 	for (movesIndex = 0; movesIndex < size; movesIndex++)
 		printf("%s\n", moves[movesIndex]);
+
 
 	/* start predicting moves */
 	for (movesIndex = 0; movesIndex < size; movesIndex++) {
@@ -50,6 +52,9 @@ static int notBadMoves(char result[][256])
 			case BLACK:
 				/* Winning move found */
 				if (whoDidLastMove() == gameOverValue) {
+					printf("Winning move found: %s\n",
+						move);
+					resultIndex = 0;
 					strcpy(result[resultIndex], move);
 					resultIndex++;
 					restoreState();
@@ -78,10 +83,13 @@ static int notBadMoves(char result[][256])
 
 void getRandomMove(char move[256])
 {
-	int losingMoves = 0;
+	int goodMoves = 0;
 	char moves[100][256];
 
-	losingMoves = notBadMoves(moves);
-	strcpy(move, moves[rand() % losingMoves]);
+	goodMoves = notBadMoves(moves);
+	if (goodMoves > 1)
+		strcpy(move, moves[rand() % goodMoves]);
+	else
+		strcpy(move, moves[goodMoves - 1]);
 	/* return random moves */
 }
