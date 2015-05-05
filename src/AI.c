@@ -63,20 +63,23 @@ static int notBadMoves(char result[][256])
 					restoreState();
 					return resultIndex;
 				}
-		                /* Losing move found */
+		                /* Loosing move found */
 		                break;
 			case DRAW:
 			case NOPLAYER:
+				/* Unknown move found */
 				strcpy(result[resultIndex], move);
 		                resultIndex++;
-		                break;
+		                restoreState();
 			default:
 				/* This should never happen */
 				break;
 		}
-		restoreState();
 	}
-	/* There are only bad moves ... :-(((( */
+	/*
+	 * There are only bad moves ... :-((((
+	 * Lets go home....
+	*/
 	if (resultIndex == 0) {
 		strcpy(result[resultIndex], moves[0]);
 		resultIndex++;
