@@ -26,7 +26,7 @@ static int notBadMoves(char result[][256])
 	int resultIndex = 0;
 	char moves[100][256];
 
-	size = uniqueMoves(1, moves);
+	size = uniqueMoves(0, moves);
 	if (size == 1) {
 		strcpy(result[resultIndex], moves[0]);
 		resultIndex++;
@@ -55,7 +55,7 @@ static int notBadMoves(char result[][256])
 				/* Winning move found */
 				if (whoDidLastMove() == gameOverValue) {
 #ifdef DEBUG
-					printf("Wining move found\n");
+					printf("Wining move found %s\n", move);
 #endif
 					resultIndex = 0;
 					strcpy(result[resultIndex], move);

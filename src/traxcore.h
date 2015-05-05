@@ -41,7 +41,7 @@
 struct trax_game {
 	int boardEmpty;
 	int wtm;
-	int board[2 * BOARD_SIZE + 1][2 * BOARD_SIZE + 1];
+	char board[2 * BOARD_SIZE + 1][2 * BOARD_SIZE + 1];
 	int gameOver;
 	int numOfTiles;
 	int firstRow, lastRow, firstCol, lastCol;
