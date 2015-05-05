@@ -26,7 +26,7 @@ static int notBadMoves(char result[][256])
 	int resultIndex = 0;
 	char moves[100][256];
 
-	size = uniqueMoves(0, moves);
+	size = uniqueMoves(moves);
 	if (size == 1) {
 		strcpy(result[resultIndex], moves[0]);
 		resultIndex++;

@@ -32,6 +32,7 @@ void play(int player_no)
 			scanf("%s", move);
 			makeMove(move);
 			getRandomMove(move);
+			makeMove(move);
 			printf("%s\n", move);
 		}
 	}

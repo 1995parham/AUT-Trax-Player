@@ -805,7 +805,8 @@ static int isLeftRightMirror()
 
 static int isUpDownMirror()
 {
-	int piece, i, j, i2;
+	char piece;
+	int i, j, i2;
 
 	i2 = getRowSize();
 	for (i = 1; i <= ((getRowSize() + 1) / 2); i++) {
@@ -851,7 +852,8 @@ static int isUpDownMirror()
 
 static int isRotateMirror()
 {
-	int i, j, piece, i2, j2;
+	char piece;
+	int i, j, i2, j2;
 
 	i2 = getRowSize();
 	for (i = 1; i <= ((getRowSize() + 1) / 2); i++) {
@@ -898,7 +900,7 @@ static int isRotateMirror()
 }
 
 
-int uniqueMoves(int remove_mirror_moves, char moves[][256])
+int uniqueMoves(char moves[][256])
 {
 	/*
 	 * complex throw away a lot of equal moves
@@ -953,26 +955,6 @@ int uniqueMoves(int remove_mirror_moves, char moves[][256])
 		                movesIndex++;
 		                strcpy(moves[movesIndex], "B1\\");
 		                movesIndex++;
-		                if (!remove_mirror_moves) {
-			                strcpy(moves[movesIndex],
-				                "A0\\");
-			                movesIndex++;
-			                strcpy(moves[movesIndex],
-				                "A0/");
-			                movesIndex++;
-			                strcpy(moves[movesIndex],
-				                "A0+");
-			                movesIndex++;
-			                strcpy(moves[movesIndex],
-				                "A2/");
-			                movesIndex++;
-			                strcpy(moves[movesIndex],
-				                "A2\\");
-			                movesIndex++;
-			                strcpy(moves[movesIndex],
-				                "A2+");
-			                movesIndex++;
-		                }
 		                break;
 			case NS:
 				strcpy(moves[movesIndex], "@1+");
@@ -986,27 +968,6 @@ int uniqueMoves(int remove_mirror_moves, char moves[][256])
 		                strcpy(moves[movesIndex], "A0+");
 		                movesIndex++;
 		                strcpy(moves[movesIndex], "A0\\");
-		                movesIndex++;
-		                if (!remove_mirror_moves) {
-			                strcpy(moves[movesIndex],
-				                "@1\\");
-			                movesIndex++;
-			                strcpy(moves[movesIndex],
-				                "A0\\");
-			                movesIndex++;
-			                strcpy(moves[movesIndex],
-				                "B1/");
-			                movesIndex++;
-			                strcpy(moves[movesIndex],
-				                "B1\\");
-			                movesIndex++;
-			                strcpy(moves[movesIndex],
-				                "A2/");
-			                movesIndex++;
-			                strcpy(moves[movesIndex],
-				                "A2\\");
-			                movesIndex++;
-		                }
 		                break;
 			default:
 				/* This should never happen */
@@ -1029,12 +990,10 @@ int uniqueMoves(int remove_mirror_moves, char moves[][256])
 	                                   : BOARD_SIZE;
 	jEnd = (getColSize() < BOARD_SIZE) ? getColSize() + 1
 	                                   : BOARD_SIZE;
-	if (remove_mirror_moves) {
-		if (lrsym)
-			jEnd = (getColSize() + 1) / 2;
-		if (rsym || udsym)
-			iEnd = (getRowSize() + 1) / 2;
-	}
+	if (lrsym)
+		jEnd = (getColSize() + 1) / 2;
+	if (rsym || udsym)
+		iEnd = (getRowSize() + 1) / 2;
 
 	for (i = iBegin; i <= iEnd; i++) {
 		for (j = jBegin; j <= jEnd; j++) {
@@ -1399,18 +1358,16 @@ int uniqueMoves(int remove_mirror_moves, char moves[][256])
 		}
 	}
 
-	if (remove_mirror_moves) {
-		/* remove left-right symmetry moves */
-		if (lrsym && getColSize() % 2 == 1) {
-			for (i = iBegin; i <= iEnd; i++) {
-				directionList[i][jEnd][0] = true;
-			}
+	/* remove left-right symmetry moves */
+	if (lrsym && getColSize() % 2 == 1) {
+		for (i = iBegin; i <= iEnd; i++) {
+			directionList[i][jEnd][0] = true;
 		}
-		/* remove up-down symmetry moves */
-		if (udsym && getRowSize() % 2 == 1) {
-			for (j = jBegin; j <= jEnd; j++) {
-				directionList[iEnd][j][1] = true;
-			}
+	}
+	/* remove up-down symmetry moves */
+	if (udsym && getRowSize() % 2 == 1) {
+		for (j = jBegin; j <= jEnd; j++) {
+			directionList[iEnd][j][1] = true;
 		}
 	}
 

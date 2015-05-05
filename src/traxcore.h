@@ -64,6 +64,6 @@ int isGameOver(void);
  * use array at least can contains
  * 100 moves with 256 character
 */
-int uniqueMoves(int remove_mirror_moves, char moves[][256]);
+int uniqueMoves(char moves[][256]);
 
 #endif
