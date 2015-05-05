@@ -969,6 +969,18 @@ int uniqueMoves(char moves[][256])
 		                movesIndex++;
 		                strcpy(moves[movesIndex], "B1\\");
 		                movesIndex++;
+		                strcpy(moves[movesIndex], "A0\\");
+		                movesIndex++;
+		                strcpy(moves[movesIndex], "A0/");
+		                movesIndex++;
+		                strcpy(moves[movesIndex], "A0+");
+		                movesIndex++;
+		                strcpy(moves[movesIndex], "A2/");
+		                movesIndex++;
+		                strcpy(moves[movesIndex], "A2\\");
+		                movesIndex++;
+		                strcpy(moves[movesIndex], "A2+");
+		                movesIndex++;
 		                break;
 			case NS:
 				strcpy(moves[movesIndex], "@1+");
@@ -982,6 +994,15 @@ int uniqueMoves(char moves[][256])
 		                strcpy(moves[movesIndex], "A0+");
 		                movesIndex++;
 		                strcpy(moves[movesIndex], "A0\\");
+		                movesIndex++;
+		                strcpy(moves[movesIndex], "B1/");
+		                movesIndex++;
+		                strcpy(moves[movesIndex], "B1\\");
+		                movesIndex++;
+		                strcpy(moves[movesIndex], "A2/");
+		                movesIndex++;
+		                strcpy(moves[movesIndex], "A2\\");
+		                movesIndex++;
 		                break;
 			default:
 				/* This should never happen */
@@ -1002,10 +1023,6 @@ int uniqueMoves(char moves[][256])
 	jBegin = (canMoveRight()) ? 0 : 1;
 	iEnd = (getRowSize() < BOARD_SIZE) ? getRowSize() : BOARD_SIZE;
 	jEnd = (getColSize() < BOARD_SIZE) ? getColSize() : BOARD_SIZE;
-	if (lrsym)
-		jEnd = (getColSize() + 1) / 2;
-	if (rsym || udsym)
-		iEnd = (getRowSize() + 1) / 2;
 
 	for (i = iBegin; i <= iEnd; i++) {
 		for (j = jBegin; j <= jEnd; j++) {
@@ -1261,23 +1278,10 @@ int uniqueMoves(char moves[][256])
 		}
 	}
 
-	/* remove left-right symmetry moves */
-	if (lrsym && getColSize() % 2 == 1) {
-		for (i = iBegin; i <= iEnd; i++) {
-			directionList[i][jEnd][0] = true;
-		}
-	}
-	/* remove up-down symmetry moves */
-	if (udsym && getRowSize() % 2 == 1) {
-		for (j = jBegin; j <= jEnd; j++) {
-			directionList[iEnd][j][1] = true;
-		}
-	}
-
 	/* collects the moves */
 	for (i = iBegin; i <= iEnd; i++) {
 		for (j = jBegin; j <= jEnd; j++) {
-			// remove rotation symmetry moves
+			/* remove rotation symmetry moves */
 			if (rsym && getRowSize() % 2 == 1) {
 				int jMiddle = (getColSize() + 1) / 2;
 				if (j > jMiddle && i == iEnd) {
