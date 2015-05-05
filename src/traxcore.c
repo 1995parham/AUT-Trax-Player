@@ -27,6 +27,9 @@ static struct trax_game current = {
 
 static struct trax_game save;
 
+static struct trax_game stack[2];
+static int stack_pointer;
+
 static int getNumOfTiles(void)
 {
 	return current.numOfTiles;
@@ -40,6 +43,18 @@ void saveState(void)
 void restoreState(void)
 {
 	current = save;
+}
+
+void pushState(void)
+{
+	stack[stack_pointer] = current;
+	stack_pointer++;
+}
+
+void popState()
+{
+	stack_pointer--;
+	current = stack[stack_pointer];
 }
 
 int getRowSize(void)
@@ -1067,6 +1082,7 @@ int uniqueMoves(int remove_mirror_moves, char moves[][256])
 			if (neighbors[i][j] != 0) {
 				dl = getAt(i + 1, j - 1);
 				dr = getAt(i + 1, j + 1);
+				dd = getAt(i - 1, j - 1);
 				ur = getAt(i - 1, j + 1);
 				rr = getAt(i, j + 2);
 				switch (neighbors[i][j]) {
