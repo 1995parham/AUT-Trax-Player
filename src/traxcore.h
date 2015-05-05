@@ -17,7 +17,6 @@
 #define TRAXBOARD_H
 
 #define EMPTY 0
-#define INVALID 7
 #define NS 1
 #define SN 1
 #define WE 2
@@ -35,7 +34,6 @@
 #define BLACK 1
 #define DRAW 2
 #define NOPLAYER 3
-#define NORESULT 3
 
 
 struct trax_game {
