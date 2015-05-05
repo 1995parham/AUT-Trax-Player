@@ -772,99 +772,6 @@ int whoDidLastMove(void)
 }
 
 
-static int isLeftRightMirror()
-{
-	int piece, i, j, j2;
-
-	for (i = 1; i <= getRowSize(); i++) {
-		j2 = getColSize();
-		for (j = 1; j <= ((getColSize() + 1) / 2); j++) {
-			piece = getAt(i, j);
-			switch (getAt(i, j2)) {
-				case NW:
-					if (piece != NE)
-						return false;
-			                break;
-				case NE:
-					if (piece != NW)
-						return false;
-			                break;
-				case SW:
-					if (piece != SE)
-						return false;
-			                break;
-				case SE:
-					if (piece != SW)
-						return false;
-			                break;
-				case NS:
-					if (piece != NS)
-						return false;
-			                break;
-				case WE:
-					if (piece != WE)
-						return false;
-			                break;
-				case EMPTY:
-					if (piece != EMPTY)
-						return false;
-			                break;
-				default:
-					break;
-			}
-			j2--;
-		}
-	}
-	return true;
-}
-
-static int isUpDownMirror()
-{
-	char piece;
-	int i, j, i2;
-
-	i2 = getRowSize();
-	for (i = 1; i <= ((getRowSize() + 1) / 2); i++) {
-		for (j = 1; j <= getColSize(); j++) {
-			piece = getAt(i, j);
-			switch (getAt(i2, j)) {
-				case NW:
-					if (piece != SW)
-						return false;
-			                break;
-				case NE:
-					if (piece != SE)
-						return false;
-			                break;
-				case SW:
-					if (piece != NW)
-						return false;
-			                break;
-				case SE:
-					if (piece != NE)
-						return false;
-			                break;
-				case NS:
-					if (piece != NS)
-						return false;
-			                break;
-				case WE:
-					if (piece != WE)
-						return false;
-			                break;
-				case EMPTY:
-					if (piece != EMPTY)
-						return false;
-			                break;
-				default:
-					break;
-			}
-		}
-		i2--;
-	}
-	return true;
-}
-
 static int isRotateMirror()
 {
 	char piece;
@@ -925,7 +832,7 @@ int uniqueMoves(char moves[][256])
 	int movesIndex = 0;
 
 	int i, j, k;
-	char dl, dr, ur, rr, dd, ul;
+	char dl, dr, ur, rr, ul;
 	/* which neighbors - default all values 0 */
 	int neighbors[BOARD_SIZE + 2][BOARD_SIZE + 2];
 	int directionList[BOARD_SIZE + 2][BOARD_SIZE + 2][3];
@@ -941,7 +848,7 @@ int uniqueMoves(char moves[][256])
 	int up, down, left, right;
 	int iBegin, jBegin, iEnd, jEnd;
 
-	int lrsym, udsym, rsym;
+	int rsym;
 
 	if (current.gameOver != NOPLAYER)
 		return 0;
@@ -1016,8 +923,6 @@ int uniqueMoves(char moves[][256])
 			for (k = 0; k < 3; k++)
 				directionList[i][j][k] = false;
 
-	lrsym = isLeftRightMirror();
-	udsym = isUpDownMirror();
 	rsym = isRotateMirror();
 	iBegin = (canMoveDown()) ? 0 : 1;
 	jBegin = (canMoveRight()) ? 0 : 1;
@@ -1273,6 +1178,8 @@ int uniqueMoves(char moves[][256])
 							              1][j][1] = true;
 						break;
 					}
+					default:
+						break;
 				}
 			}
 		}
