@@ -60,7 +60,7 @@ int getColSize(void)
 	                                          current.firstCol));
 }
 
-static int getAt(int row, int col)
+static char getAt(int row, int col)
 {
 	if ((row < 1) || (row > BOARD_SIZE))
 		return EMPTY;
@@ -258,6 +258,104 @@ int isGameOver(void)
 		return current.gameOver;
 	}
 	return NOPLAYER;
+}
+
+static int forcedMove(int brow, int bcol)
+{
+	if (!isBlank(brow, bcol)) return true;
+	if ((brow < 1) || (brow > BOARD_SIZE) || (bcol < 1) ||
+	    (bcol > BOARD_SIZE))
+		return true;
+
+	int up = getAt(brow - 1, bcol);
+	int down = getAt(brow + 1, bcol);
+	int left = getAt(brow, bcol - 1);
+	int right = getAt(brow, bcol + 1);
+
+	int neighbors = 0;
+
+	if (!up) neighbors++;
+	if (!down) neighbors++;
+	if (!left) neighbors++;
+	if (!right) neighbors++;
+
+	if (neighbors < 2)
+		/* Less than two pieces bordering */
+		return true;
+
+	int white_up = 0, black_up = 0, white_down = 0, black_down = 0, white_left = 0, black_left = 0, white_right = 0, black_right = 0;
+
+	if (up == SN || up == SW || up == SE) white_up = 1;
+	if (up == WE || up == NW || up == NE) black_up = 1;
+	if (down == NS || down == NW || down == NE) white_down = 1;
+	if (down == WE || down == SW || down == SE) black_down = 1;
+	if (left == EW || left == EN || left == ES) white_left = 1;
+	if (left == NS || left == NW || left == SW) black_left = 1;
+	if (right == WE || right == WN || right == WS) white_right = 1;
+	if (right == NS || right == NE || right == SE) black_right = 1;
+
+	int white = white_up + white_down + white_left + white_right;
+	int black = black_up + black_down + black_left + black_right;
+
+	if ((white > 2) ||
+	    (black > 2)) { return false; } // Illegal filled cave
+	if ((white < 2) && (black < 2)) { return true; } // Done
+
+	char piece = EMPTY;
+	if (white == 2) {
+		switch (white_up + 2 * white_down + 4 * white_left +
+		        8 * white_right) {
+			case 3:
+				piece = NS;
+		                break;
+			case 12:
+				piece = WE;
+		                break;
+			case 5:
+				piece = NW;
+		                break;
+			case 9:
+				piece = NE;
+		                break;
+			case 6:
+				piece = WS;
+		                break;
+			case 10:
+				piece = SE;
+		                break;
+			default:
+				break;
+		}
+	} else {
+		switch (black_up + 2 * black_down + 4 * black_left +
+		        8 * black_right) {
+			case 12:
+				piece = NS;
+		                break;
+			case 3:
+				piece = WE;
+		                break;
+			case 10:
+				piece = NW;
+		                break;
+			case 6:
+				piece = NE;
+		                break;
+			case 9:
+				piece = WS;
+		                break;
+			case 5:
+				piece = SE;
+		                break;
+			default:
+				break;
+		}
+	}
+	putAt(brow, bcol, piece);
+	if (!forcedMove(brow - 1, bcol)) { return false; }
+	if (!forcedMove(brow + 1, bcol)) { return false; }
+	if (!forcedMove(brow, bcol - 1)) { return false; }
+	return forcedMove(brow, bcol + 1);
 }
 
 int makeMove(const char *move)
@@ -630,6 +728,20 @@ int makeMove(const char *move)
 			/* This should never happen */
 			break;
 	}
+	if (row == 0) row++;
+	if (col == 0) col++;
+	if (!forcedMove(row - 1, col)) {
+		return -1;
+	}
+	if (!forcedMove(row + 1, col)) {
+		return -1;
+	}
+	if (!forcedMove(row, col - 1)) {
+		return -1;
+	}
+	if (!forcedMove(row, col + 1)) {
+		return -1;
+	}
 	/* note that switchPlayer() _must_ come before isGameOver() */
 	switchPlayer();
 	/* updates the gameOver attribute */
@@ -659,103 +771,6 @@ int whoDidLastMove(void)
 	return NOPLAYER;
 }
 
-static int forcedMove(int brow, int bcol)
-{
-	if (!isBlank(brow, bcol)) return true;
-	if ((brow < 1) || (brow > BOARD_SIZE) || (bcol < 1) ||
-	    (bcol > BOARD_SIZE))
-		return true;
-
-	int up = getAt(brow - 1, bcol);
-	int down = getAt(brow + 1, bcol);
-	int left = getAt(brow, bcol - 1);
-	int right = getAt(brow, bcol + 1);
-
-	int neighbors = 0;
-
-	if (!up) neighbors++;
-	if (!down) neighbors++;
-	if (!left) neighbors++;
-	if (!right) neighbors++;
-
-	if (neighbors < 2)
-		/* Less than two pieces bordering */
-		return true;
-
-	int white_up = 0, black_up = 0, white_down = 0, black_down = 0, white_left = 0, black_left = 0, white_right = 0, black_right = 0;
-
-	if (up == SN || up == SW || up == SE) white_up = 1;
-	if (up == WE || up == NW || up == NE) black_up = 1;
-	if (down == NS || down == NW || down == NE) white_down = 1;
-	if (down == WE || down == SW || down == SE) black_down = 1;
-	if (left == EW || left == EN || left == ES) white_left = 1;
-	if (left == NS || left == NW || left == SW) black_left = 1;
-	if (right == WE || right == WN || right == WS) white_right = 1;
-	if (right == NS || right == NE || right == SE) black_right = 1;
-
-	int white = white_up + white_down + white_left + white_right;
-	int black = black_up + black_down + black_left + black_right;
-
-	if ((white > 2) ||
-	    (black > 2)) { return false; } // Illegal filled cave
-	if ((white < 2) && (black < 2)) { return true; } // Done
-
-	char piece = EMPTY;
-	if (white == 2) {
-		switch (white_up + 2 * white_down + 4 * white_left +
-		        8 * white_right) {
-			case 3:
-				piece = NS;
-		                break;
-			case 12:
-				piece = WE;
-		                break;
-			case 5:
-				piece = NW;
-		                break;
-			case 9:
-				piece = NE;
-		                break;
-			case 6:
-				piece = WS;
-		                break;
-			case 10:
-				piece = SE;
-		                break;
-			default:
-				break;
-		}
-	} else {
-		switch (black_up + 2 * black_down + 4 * black_left +
-		        8 * black_right) {
-			case 12:
-				piece = NS;
-		                break;
-			case 3:
-				piece = WE;
-		                break;
-			case 10:
-				piece = NW;
-		                break;
-			case 6:
-				piece = NE;
-		                break;
-			case 9:
-				piece = WS;
-		                break;
-			case 5:
-				piece = SE;
-		                break;
-			default:
-				break;
-		}
-	}
-	putAt(brow, bcol, piece);
-	if (!forcedMove(brow - 1, bcol)) { return false; }
-	if (!forcedMove(brow + 1, bcol)) { return false; }
-	if (!forcedMove(brow, bcol - 1)) { return false; }
-	return forcedMove(brow, bcol + 1);
-}
 
 static int isLeftRightMirror()
 {
@@ -910,7 +925,7 @@ int uniqueMoves(char moves[][256])
 	int movesIndex = 0;
 
 	int i, j, k;
-	int dl, dr, ur, rr, dd;
+	char dl, dr, ur, rr, dd, ul;
 	/* which neighbors - default all values 0 */
 	int neighbors[BOARD_SIZE + 2][BOARD_SIZE + 2];
 	int directionList[BOARD_SIZE + 2][BOARD_SIZE + 2][3];
@@ -928,9 +943,8 @@ int uniqueMoves(char moves[][256])
 
 	int lrsym, udsym, rsym;
 
-	if (current.gameOver != NOPLAYER) {
+	if (current.gameOver != NOPLAYER)
 		return 0;
-	}
 
 	/* empty board only two moves */
 	if (current.boardEmpty) {
@@ -986,10 +1000,8 @@ int uniqueMoves(char moves[][256])
 	rsym = isRotateMirror();
 	iBegin = (canMoveDown()) ? 0 : 1;
 	jBegin = (canMoveRight()) ? 0 : 1;
-	iEnd = (getRowSize() < BOARD_SIZE) ? getRowSize() + 1
-	                                   : BOARD_SIZE;
-	jEnd = (getColSize() < BOARD_SIZE) ? getColSize() + 1
-	                                   : BOARD_SIZE;
+	iEnd = (getRowSize() < BOARD_SIZE) ? getRowSize() : BOARD_SIZE;
+	jEnd = (getColSize() < BOARD_SIZE) ? getColSize() : BOARD_SIZE;
 	if (lrsym)
 		jEnd = (getColSize() + 1) / 2;
 	if (rsym || udsym)
@@ -1053,196 +1065,109 @@ int uniqueMoves(char moves[][256])
 			if (neighbors[i][j] != 0) {
 				dl = getAt(i + 1, j - 1);
 				dr = getAt(i + 1, j + 1);
-				dd = getAt(i - 1, j - 1);
 				ur = getAt(i - 1, j + 1);
+				ul = getAt(i - 1, j - 1);
 				rr = getAt(i, j + 2);
 				switch (neighbors[i][j]) {
-					case 1: {
-						if (ur == SW ||
-						    ur == SE ||
-						    ur == SN)
-							directionList[i][
-								j +
-								1][0] = true;
-						if (dr == NS ||
-						    dr == NW ||
+					case 1:
+						if (dr == NS || dr == NW ||
 						    dr == NE)
-							directionList[i][
-								j +
-								1][1] = true;
-						if (rr == WS ||
-						    rr == WE ||
-						    rr == WN)
-							directionList[i][
-								j +
-								1][2] = true;
-						if (dr == WN ||
-						    dr == WS ||
-						    dr == WE)
-							directionList[
-								i +
-								1][j][1] = true;
-						if (dl == EW ||
-						    dl == ES ||
-						    dl == ES)
-							directionList[
-								i +
-								1][j][0] = true;
-						break;
-					}
+							directionList[i][j +
+							                 1][1] = true;
+				                if (dr == WN || dr == WS ||
+				                    dr == WE)
+					                directionList[i +
+					                              1][j][1] = true;
+				                if (dl == EW || dl == ES ||
+				                    dl == ES)
+					                directionList[i +
+					                              1][j][0] = true;
+				                if (ur == SW || ur == SE ||
+				                    ur == SN)
+					                directionList[i][j +
+					                                 1][0] = true;
+				                break;
 					case 2: {
-						if (dr == NS ||
-						    dr == NW ||
+						if (dr == NS || dr == NW ||
 						    dr == NE)
-							directionList[i][
-								j +
-								1][1] = true;
-						if (ur == SW ||
-						    ur == SE ||
+							directionList[i][j +
+							                 1][1] = true;
+						if (ur == SW || ur == SE ||
 						    ur == SN)
-							directionList[i][
-								j +
-								1][0] = true;
+							directionList[i][j +
+							                 1][0] = true;
 						break;
 					}
 					case 4: {
-						if (dl == ES ||
-						    dl == EN ||
+						if (dl == ES || dl == EN ||
 						    dl == EW)
-							directionList[
-								i +
-								1][j][0] = true;
-						if (dr == WN ||
-						    dr == WS ||
+							directionList[i +
+							              1][j][0] = true;
+						if (dr == WN || dr == WS ||
 						    dr == WE)
-							directionList[
-								i +
-								1][j][1] = true;
-						if (ur == SW ||
-						    ur == SN ||
+							directionList[i +
+							              1][j][1] = true;
+						if (ur == SW || ur == SN ||
 						    ur == SE)
-							directionList[i][
-								j +
-								1][0] = true;
-						if (dr == NS ||
-						    dr == NE ||
+							directionList[i][j +
+							                 1][0] = true;
+						if (dr == NS || dr == NE ||
 						    dr == NW)
-							directionList[i][
-								j +
-								1][1] = true;
-						if (dd == NW ||
-						    dd == NE ||
-						    dd == NS)
-							directionList[
-								i +
-								1][j][2] = true;
+							directionList[i][j +
+							                 1][1] = true;
 						break;
 					}
 					case 8: {
-						if (dl == ES ||
-						    dl == EN ||
+						if (dl == ES || dl == EN ||
 						    dl == EW)
-							directionList[
-								i +
-								1][j][0] = true;
-						if (dr == WN ||
-						    dr == WE ||
+							directionList[i +
+							              1][j][0] = true;
+						if (dr == WN || dr == WE ||
 						    dr == WS)
-							directionList[
-								i +
-								1][j][1] = true;
-						if (dd == NW ||
-						    dd == NS ||
-						    dd == NE)
-							directionList[
-								i +
-								1][j][2] = true;
+							directionList[i +
+							              1][j][1] = true;
 						break;
 					}
 					case 16: {
-						if (ur == NW ||
-						    ur == NE ||
-						    ur == WE)
-							directionList[i][
-								j +
-								1][0] = true;
-						if (dr == SW ||
-						    dr == SE ||
+						if (dr == SW || dr == SE ||
 						    dr == WE)
-							directionList[i][
-								j +
-								1][1] = true;
-						if (rr == NE ||
-						    rr == NS ||
-						    rr == SE)
-							directionList[i][
-								j +
-								1][2] = true;
-						if (dr == SE ||
-						    dr == SN ||
+							directionList[i][j +
+							                 1][1] = true;
+						if (dr == SE || dr == SN ||
 						    dr == EN)
-							directionList[
-								i +
-								1][j][1] = true;
-						if (dl == NW ||
-						    dl == NS ||
+							directionList[i +
+							              1][j][1] = true;
+						if (dl == NW || dl == NS ||
 						    dl == WS)
-							directionList[
-								i +
-								1][j][0] = true;
+							directionList[i +
+							              1][j][0] = true;
+						if (ur == NW || ur == NE ||
+						    ur == WE)
+							directionList[i][j +
+							                 1][0] = true;
 						break;
 					}
 					case 18:
 					case 33: {
-						if (rr != EMPTY)
-							directionList[i][
-								j +
-								1][2] = true;
-						if (dr != EMPTY ||
-						    ur != EMPTY) {
-							directionList[i][
-								j +
-								1][1] = true;
-							directionList[i][
-								j +
-								1][0] = true;
-						}
+						directionList[i][j +
+						                 1][1] = true;
+						directionList[i][j +
+						                 1][0] = true;
 						directionList[i][j][2] = true;
 						break;
 					}
 					case 20:
-						if (rr != EMPTY)
-							directionList[i][
-								j +
-								1][2] = true;
-				                directionList[i +
-				                              1][j][0] = true;
-				                directionList[i][j +
-				                                 1][0] = true;
-				                directionList[i][j][0] = true;
-				                if (dd == NE ||
-				                    dd == NW ||
-				                    dd == NS)
-					                directionList[
-						                i +
-						                1][j][2] = true;
-				                break;
 					case 65: {
 						if (rr != EMPTY)
-							directionList[i][
-								j +
-								1][2] = true;
+							directionList[i][j +
+							                 1][2] = true;
 						directionList[i +
 						              1][j][0] = true;
+						directionList[i +
+						              1][j][1] = true;
 						directionList[i][j +
 						                 1][0] = true;
 						directionList[i][j][0] = true;
-						if (dd == SW ||
-						    dd == SE ||
-						    dd == WE)
-							directionList[
-								i +
-								1][j][2] = true;
 						break;
 					}
 					case 24:
@@ -1253,23 +1178,25 @@ int uniqueMoves(char moves[][256])
 						break;
 					}
 					case 32: {
-						if (dr == SE ||
-						    dr == SW ||
+						if (dr == SE || dr == SW ||
 						    dr == EW)
-							directionList[i][
-								j +
-								1][1] = true;
-						if (ur == NW ||
-						    ur == NE ||
+							directionList[i][j +
+							                 1][1] = true;
+						if (ur == NW || ur == NE ||
 						    ur == WE)
-							directionList[i][
-								j +
-								1][0] = true;
+							directionList[i][j +
+							                 1][0] = true;
 						break;
 					}
 					case 36: {
+						if (ul == NW || ul == SW ||
+						    ul == NS)
+							directionList[i -
+							              1][j][1] = true;
 						directionList[i][j +
 						                 1][1] = true;
+						directionList[i][j +
+						                 1][0] = true;
 						directionList[i][j][1] = true;
 						break;
 					}
@@ -1279,80 +1206,56 @@ int uniqueMoves(char moves[][256])
 						break;
 					}
 					case 64: {
-						if (dl == WN ||
-						    dl == WS ||
+						if (dl == WN || dl == WS ||
 						    dl == NS)
-							directionList[
-								i +
-								1][j][0] = true;
-						if (dr == EN ||
-						    dr == ES ||
+							directionList[i +
+							              1][j][0] = true;
+						if (dr == EN || dr == ES ||
 						    dr == NS)
-							directionList[
-								i +
-								1][j][1] = true;
-						if (ur == NW ||
-						    ur == NE ||
+							directionList[i +
+							              1][j][1] = true;
+						if (ur == NW || ur == NE ||
 						    ur == WE)
-							directionList[i][
-								j +
-								1][0] = true;
-						if (dr == SE ||
-						    dr == SW ||
+							directionList[i][j +
+							                 1][0] = true;
+						if (dr == SE || dr == SW ||
 						    dr == EW)
-							directionList[i][
-								j +
-								1][1] = true;
-						if (dd == SW ||
-						    dd == SE ||
-						    dd == WE)
-							directionList[
-								i +
-								1][j][2] = true;
+							directionList[i][j +
+							                 1][1] = true;
 						break;
 					}
 					case 66: {
+						if (ul == EW || ul == ES ||
+						    ul == EN)
+							directionList[i -
+							              1][j][1] = true;
 						directionList[i][j +
 						                 1][1] = true;
+						directionList[i][j +
+						                 1][0] = true;
 						directionList[i][j][1] = true;
 						break;
 					}
 					case 72:
 					case 132: {
-						if (dl != EMPTY ||
-						    dr != EMPTY) {
-							directionList[
-								i +
-								1][j][0] = true;
-							directionList[
-								i +
-								1][j][1] = true;
-						}
-						if (dd != EMPTY)
-							directionList[
-								i +
-								1][j][2] = true;
+						directionList[i +
+						              1][j][0] = true;
+						directionList[i +
+						              1][j][1] = true;
 						directionList[i][j][2] = true;
 						break;
 					}
 					case 128: {
-						if (dl == WS ||
-						    dl == WN ||
+						if (dl == WS || dl == WN ||
 						    dl == SN)
-							directionList[
-								i +
-								1][j][0] = true;
-						if (dr == EN ||
-						    dr == ES ||
+							directionList[i +
+							              1][j][0] = true;
+						if (dr == EN || dr == ES ||
 						    dr == NS)
-							directionList[
-								i +
-								1][j][1] = true;
+							directionList[i +
+							              1][j][1] = true;
 						break;
 					}
-					default:
-						/* This should never happen */
-						break;
 				}
 			}
 		}
