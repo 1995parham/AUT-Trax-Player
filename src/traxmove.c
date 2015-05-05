@@ -17,19 +17,38 @@
 
 void getTraxMoveString(int i, int j, char *aMove, char direction)
 {
-	aMove[0] = (char) (i + '@');
-	aMove[1] = (char) (j + '0');
-	aMove[2] = direction;
-	aMove[3] = 0;
+	int index = 0;
+
+	if (i == 0) {
+		aMove[index] = '@';
+		index++;
+	} else {
+		do {
+			i--;
+			aMove[index] = (char) ((i % 26) + 'A');
+			index++;
+			i /= 26;
+		} while (i != 0);
+	}
+
+	do {
+		aMove[index] = (char) ((j % 10) + '0');
+		index++;
+		j /= 10;
+	} while (j != 0);
+
+	aMove[index] = direction;
+	index++;
+	aMove[index] = 0;
 }
 
 void getTraxMoveDefinition(int *i, int *j, const char *aMove, char *direction)
 {
-	*i = 0;
-	do {
+	*i = *aMove++ - '@';
+	while (isalpha(*aMove)) {
 		char ch = *aMove++;
-		*i = *i * 26 + ch - '@';
-	} while (isalpha(*aMove));
+		*i = *i * 26 + ch - 'A';
+	};
 
 	*j = atoi(aMove);
 	while (isdigit(*aMove))

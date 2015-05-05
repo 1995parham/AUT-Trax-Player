@@ -938,11 +938,11 @@ int uniqueMoves(int remove_mirror_moves, char moves[][256])
 		                movesIndex++;
 		                strcpy(moves[movesIndex], "@1\\");
 		                movesIndex++;
-		                strcpy(moves[movesIndex], "E1+");
+		                strcpy(moves[movesIndex], "B1+");
 		                movesIndex++;
-		                strcpy(moves[movesIndex], "E1/");
+		                strcpy(moves[movesIndex], "B1/");
 		                movesIndex++;
-		                strcpy(moves[movesIndex], "E1\\");
+		                strcpy(moves[movesIndex], "B1\\");
 		                movesIndex++;
 		                if (!remove_mirror_moves) {
 			                strcpy(moves[movesIndex], "A0\\");
@@ -964,18 +964,22 @@ int uniqueMoves(int remove_mirror_moves, char moves[][256])
 		                movesIndex++;
 		                strcpy(moves[movesIndex], "@1/");
 		                movesIndex++;
+		                strcpy(moves[movesIndex], "@1\\");
+		                movesIndex++;
 		                strcpy(moves[movesIndex], "A0/");
 		                movesIndex++;
 		                strcpy(moves[movesIndex], "A0+");
+		                movesIndex++;
+		                strcpy(moves[movesIndex], "A0\\");
 		                movesIndex++;
 		                if (!remove_mirror_moves) {
 			                strcpy(moves[movesIndex], "@1\\");
 			                movesIndex++;
 			                strcpy(moves[movesIndex], "A0\\");
 			                movesIndex++;
-			                strcpy(moves[movesIndex], "E1/");
+			                strcpy(moves[movesIndex], "B1/");
 			                movesIndex++;
-			                strcpy(moves[movesIndex], "E1\\");
+			                strcpy(moves[movesIndex], "B1\\");
 			                movesIndex++;
 			                strcpy(moves[movesIndex], "A2/");
 			                movesIndex++;
@@ -1064,9 +1068,7 @@ int uniqueMoves(int remove_mirror_moves, char moves[][256])
 				dl = getAt(i + 1, j - 1);
 				dr = getAt(i + 1, j + 1);
 				ur = getAt(i - 1, j + 1);
-				getAt(i - 1, j - 1);
 				rr = getAt(i, j + 2);
-				dd = getAt(i + 2, j);
 				switch (neighbors[i][j]) {
 					case 1: {
 						if (ur == SW || ur == SE ||
