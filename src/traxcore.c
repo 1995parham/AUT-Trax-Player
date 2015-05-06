@@ -367,8 +367,6 @@ int makeMove(const char *move)
 
 	if (current.gameOver != NOPLAYER); /* Game is over */
 
-	/* move = move.toUpperCase(); */
-
 	if (current.boardEmpty) {
 		if (!strcmp(move, "@0/")) {
 			putAt(1, 1, NW);
@@ -394,10 +392,10 @@ int makeMove(const char *move)
 	if (!isBlank(row, col))
 		return -1; /* occupy */
 
-	int up = getAt(row - 1, col), down = getAt(row + 1,
-		col), left = getAt(
-		row, col - 1), right = getAt(row,
-		col + 1);
+	char up = getAt(row - 1, col);
+	char down = getAt(row + 1, col);
+	char left = getAt(row, col - 1);
+	char right = getAt(row, col + 1);
 
 	if (up == SN || up == SE || up == SW) ohs_up = 1;
 	if (up == EW || up == NW || up == NE) eks_up = 1;
