@@ -12,4 +12,4 @@ set(SOURCE_FILES
     src/AI.c
     )
 
-add_executable(AUT_Trax_Player ${SOURCE_FILES})
+add_executable(AUT_Trax_Player.out ${SOURCE_FILES})
