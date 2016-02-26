@@ -37,8 +37,10 @@ struct game {
 
 struct game *game_new(enum player p, int row, int col);
 
-enum state game_state(const struct game *g);
+enum state game_state(struct game *g);
 
 void game_move(struct game *g, int row, int col);
+
+void game_move_back(struct game *g, int row, int col);
 
 #endif
