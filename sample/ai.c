@@ -12,10 +12,22 @@
  * Copyright (c) 2016 Parham Alvani.
 */
 
-int minimax(int board[9], int player) {
-    //How is the position like for player (their turn) on board?
-    int winner = win(board);
-    if(winner != 0) return winner*player;
+#include "game.h"
+#include "board.h"
+
+int minimax(struct game *g, enum player p) {
+	/* How is the position like for player (their turn) on board? */
+	enum state s = game_state(g);
+	if (s == WIN)
+		if (p == X)
+			return X;
+		else
+			return O;
+	else if (s == LOSS)
+		if (p == X)
+			return O;
+		else
+			return X;
 
     int move = -1;
     int score = -2;//Losing moves are preferred to no move
@@ -42,7 +54,8 @@ void computerMove(int board[9]) {
     for(i = 0; i < 9; ++i) {
         if(board[i] == 0) {
             board[i] = 1;
-            int tempScore = -minimax(board, -1);
+            //int tempScore = -minimax(board, -1);
+	    int tempScore = 0;
             board[i] = 0;
             if(tempScore > score) {
                 score = tempScore;
