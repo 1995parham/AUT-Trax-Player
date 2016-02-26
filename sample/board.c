@@ -19,11 +19,18 @@
 const struct board *board_new(int row, int col)
 {
 	struct board *new;
+	int i, j;
 	
 	new = malloc(sizeof(struct board));
 	new->row = row;
 	new->col = col;
 	new->b = malloc(row * col * sizeof(int));
+
+	for (i = 0; i < row; i++) {
+		for (j = 0; j < col; j++) {
+			new->b[i * col + j] = 0;
+		}
+	}
 
 	return new;
 }
