@@ -16,7 +16,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct board *board_new(int row, int col)
+const struct board *board_new(int row, int col)
 {
 	struct board *new;
 	
@@ -34,6 +34,14 @@ int board_get_cell(const struct board *b, int row, int col)
 		if (col < b->col && 0 <= col)
 			return b->b[row * b->col + col];
 	return -1;
+}
+
+void board_set_cell(const struct board *b, int row, int col, int v)
+{
+	if (row < b->row && 0 <= row)
+		if (col < b->col && 0 <= col)
+			b->b[row * b->col + col] = v;
+	return;
 }
 
 void board_delete(const struct board *b)

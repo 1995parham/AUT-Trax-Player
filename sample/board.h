@@ -21,11 +21,13 @@ struct board {
 	int row, col;
 };
 
-struct board *board_new(int row, int col);
+const struct board *board_new(int row, int col);
 
 void board_print(const struct board *b, FILE *fp);
 
 int board_get_cell(const struct board *b, int row, int col);
+
+void board_set_cell(const struct board *b, int row, int col, int v);
 
 void board_delete(const struct board *b);
 
