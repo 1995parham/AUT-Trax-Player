@@ -17,17 +17,18 @@
 #include "board.h"
 
 enum player {
-	X = 0,
-	Y = 1
+	X = 2,
+	O = 1
 };
 
 enum state {
 	WIN,
 	LOSS,
-	DRAW
+	DRAW,
+	NOTHING
 };
 
-struct gmae {
+struct game {
 	const struct board *b;
 	enum player p;
 	enum player turn;
@@ -38,6 +39,6 @@ struct game *game_new(enum player p, int row, int col);
 
 enum state game_state(const struct game *g);
 
-void game_move(int row, int col, int move);
+void game_move(struct game *g, int row, int col);
 
 #endif
