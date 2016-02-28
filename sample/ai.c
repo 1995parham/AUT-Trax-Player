@@ -14,37 +14,47 @@
 
 #include "game.h"
 #include "board.h"
+#include "player.h"
 
-int minimax(struct game *g, enum player p) {
+int minimax(struct game *g) {
 	/* How is the position like for player (their turn) on board? */
+	enum player p = g->turn;
 	enum state s = game_state(g);
+	
 	if (s == WIN)
-		if (p == X)
-			return X;
-		else
-			return O;
+		return 1;
 	else if (s == LOSS)
-		if (p == X)
-			return O;
-		else
-			return X;
+		return -1;
 
-    int move = -1;
-    int score = -2;//Losing moves are preferred to no move
-    int i;
-    for(i = 0; i < 9; ++i) {//For all moves,
-        if(board[i] == 0) {//If legal,
-            board[i] = player;//Try the move
-            int thisScore = -minimax(board, player*-1);
-            if(thisScore > score) {
-                score = thisScore;
-                move = i;
-            }//Pick the one that's worst for the opponent
-            board[i] = 0;//Reset board after try
-        }
-    }
-    if(move == -1) return 0;
-    return score;
+    	struct move m = {-1, -1};
+    	int score = 0;//Losing moves are preferred to no move
+    	int i, j;
+    	/* For all moves */
+    	for (i = 0; i < g->b->row; i++) {
+		for (j = 0; j < g->b->col; j++) {
+			/* If legal move */
+			if (board_get_cell(g->b, i, j) == 0) {
+				/* Try the move */
+				game_move(g, i, j);
+
+				int current = minimax(g);
+				
+				/* Pick the one that's worst for the opponent */
+				if(score == 0 || current == -1) {
+					score = -current;
+					m.row = i;
+					m.col = j;
+				}				
+
+				/* Reset board after try */
+				game_move_back(g, i, j);
+			}
+		}
+	}
+
+	if(m.row == -1 && m.col == -1)
+		return 0;
+	return score;
 }
 
 void computerMove(int board[9]) {
