@@ -16,3 +16,8 @@ struct move {
 	int row;
 	int col;
 };
+
+struct player {
+	void *context;
+	struct move (*do_move)(struct player *p, struct move enemy_move);
+}
