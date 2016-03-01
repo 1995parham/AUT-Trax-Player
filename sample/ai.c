@@ -20,17 +20,17 @@ int minimax(struct game *g) {
 	/* How is the position like for player (their turn) on board? */
 	enum player p = g->turn;
 	enum state s = game_state(g);
-	
+
 	if (s == WIN)
 		return 1;
 	else if (s == LOSS)
 		return -1;
 
-    	struct move m = {-1, -1};
-    	int score = 0;//Losing moves are preferred to no move
-    	int i, j;
-    	/* For all moves */
-    	for (i = 0; i < g->b->row; i++) {
+	struct move m = {-1, -1};
+	int score = 0;//Losing moves are preferred to no move
+	int i, j;
+	/* For all moves */
+	for (i = 0; i < g->b->row; i++) {
 		for (j = 0; j < g->b->col; j++) {
 			/* If legal move */
 			if (board_get_cell(g->b, i, j) == 0) {
@@ -38,13 +38,13 @@ int minimax(struct game *g) {
 				game_move(g, i, j);
 
 				int current = minimax(g);
-				
+
 				/* Pick the one that's worst for the opponent */
 				if(score == 0 || current == -1) {
 					score = -current;
 					m.row = i;
 					m.col = j;
-				}				
+				}
 
 				/* Reset board after try */
 				game_move_back(g, i, j);
@@ -76,4 +76,3 @@ void computerMove(int board[9]) {
     //returns a score based on minimax tree at a given node.
     board[move] = 1;
 }
-
