@@ -38,7 +38,7 @@ enum state game_state(struct game *g)
 			counter++;
 		}
 		if (counter == g->b->col) {
-			if (g->p = X)
+			if (g->p == X)
 				g->s = WIN;
 			else
 				g->s = LOSS;
@@ -52,7 +52,7 @@ enum state game_state(struct game *g)
 			counter++;
 		}
 		if (counter == g->b->row) {
-			if (g->p = X)
+			if (g->p == X)
 				g->s = WIN;
 			else
 				g->s = LOSS;
@@ -66,7 +66,7 @@ enum state game_state(struct game *g)
 			counter++;
 		}
 		if (counter == g->b->row) {
-			if (g->p = X)
+			if (g->p == X)
 				g->s = WIN;
 			else
 				g->s = LOSS;
@@ -77,7 +77,7 @@ enum state game_state(struct game *g)
 			counter++;
 		}
 		if (counter == g->b->row) {
-			if (g->p = X)
+			if (g->p == X)
 				g->s = WIN;
 			else
 				g->s = LOSS;
@@ -91,7 +91,7 @@ enum state game_state(struct game *g)
 			counter++;
 		}
 		if (counter == g->b->col) {
-			if (g->p = O)
+			if (g->p == O)
 				g->s = WIN;
 			else
 				g->s = LOSS;
@@ -105,7 +105,7 @@ enum state game_state(struct game *g)
 			counter++;
 		}
 		if (counter == g->b->row) {
-			if (g->p = O)
+			if (g->p == O)
 				g->s = WIN;
 			else
 				g->s = LOSS;
@@ -119,7 +119,7 @@ enum state game_state(struct game *g)
 			counter++;
 		}
 		if (counter == g->b->row) {
-			if (g->p = O)
+			if (g->p == O)
 				g->s = WIN;
 			else
 				g->s = LOSS;
@@ -130,7 +130,7 @@ enum state game_state(struct game *g)
 			counter++;
 		}
 		if (counter == g->b->row) {
-			if (g->p = O)
+			if (g->p == O)
 				g->s = WIN;
 			else
 				g->s = LOSS;
