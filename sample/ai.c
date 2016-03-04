@@ -95,6 +95,9 @@ static struct move move(struct player_c *p, struct move enemy_move) {
 		}
 	}
 
+	/* do our move */
+	game_move(g, m.row, m.col);
+
 	return m;
 }
 
