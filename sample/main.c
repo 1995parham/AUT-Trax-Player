@@ -11,44 +11,50 @@
 /*
  * Copyright (c) 2016 Parham Alvani.
 */
+#include "player.h"
+#include "game.h"
+#include "ai.h"
+#include "ui.h"
 
 #include <stdio.h>
 
-void playerMove(int board[9]) {
-    int move = 0;
-    do {
-        printf("\nInput move ([0..8]): ");
-        scanf("%d", &move);
-        printf("\n");
-    } while (move >= 9 || move < 0 && board[move] == 0);
-    board[move] = -1;
-}
+int main(int argc, char *argv)
+{
+	int choose;
+	struct player_c *first, *second;
+	struct game *g;
 
-int main() {
-    //computer squares are 1, player squares are -1.
-    printf("Computer: O, You: X\nPlay (1)st or (2)nd? ");
-    int player=0;
-    scanf("%d",&player);
-    printf("\n");
-    unsigned turn;
-    for(turn = 0; turn < 9 && win(board) == 0; ++turn) {
-        if((turn+player) % 2 == 0)
-            computerMove(board);
-        else {
-            draw(board);
-            playerMove(board);
-        }
-    }
-    switch(win(board)) {
-        case 0:
-            printf("A draw. How droll.\n");
-            break;
-        case 1:
-            draw(board);
-            printf("You lose.\n");
-            break;
-        case -1:
-            printf("You win. Inconceivable!\n");
-            break;
-    }
+	printf("Please choose first player [AI(1) or UI(2)]: ");
+	scanf("%d", &choose);
+	
+	if (choose == 1)
+		first = ai_player_new(X, 3, 3);
+	else
+		first = ui_player_new(X, 3, 3);
+
+	printf("Please choose second player [AI(1) or UI(2)]: ");
+	scanf("%d", &choose);
+
+	if (choose == 1)
+		second = ai_player_new(X, 3, 3);
+	else
+		second = ui_player_new(X, 3, 3);
+
+	g = game_new(X, 3, 3);
+	struct move m = {-1, -1};
+
+	while (game_state(g) == NOTHING) {
+		if (g->turn == X)
+			m = first->do_move(first, m);
+		else
+			m = second->do_move(second, m);
+		game_move(g, m.row, m.col);
+	}
+
+	if (game_state(g) == WIN)
+		printf("Player X was won\n");
+	else if (game_state(g) == LOSS)
+		printf("Player O was won\n");
+	else
+		printf("Draw\n");
 }
