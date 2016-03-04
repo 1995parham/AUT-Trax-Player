@@ -12,11 +12,7 @@
  * Copyright (c) 2016 Parham Alvani.
 */
 
-//Tic-tac-toe playing AI. Exhaustive tree-search. WTFPL
-//Matthew Steel 2009, www.www.repsilat.com
-
 #include <stdio.h>
-
 
 void playerMove(int board[9]) {
     int move = 0;
@@ -29,7 +25,6 @@ void playerMove(int board[9]) {
 }
 
 int main() {
-    int board[9] = {0,0,0,0,0,0,0,0,0};
     //computer squares are 1, player squares are -1.
     printf("Computer: O, You: X\nPlay (1)st or (2)nd? ");
     int player=0;
