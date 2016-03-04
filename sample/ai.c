@@ -19,7 +19,7 @@
 
 #include <stdlib.h>
 
-static int minimax(struct game *g) {
+static double minimax(struct game *g) {
 	/* How is the position like for player (their turn) on board? */
 	enum state s = game_state(g);
 
@@ -27,10 +27,13 @@ static int minimax(struct game *g) {
 		return 1;
 	else if (s == LOSS)
 		return -1;
+	else if (s == DRAW)
+		return 0;
 
 	struct move m = {-1, -1};
 	/* Losing moves are preferred to no move */
-	int score = 0;
+	double score = 0;
+	int sum = 0, moves = 0;
 	int i, j;
 	/* For all moves */
 	for (i = 0; i < g->b->row; i++) {
@@ -39,11 +42,16 @@ static int minimax(struct game *g) {
 			if (board_get_cell(g->b, i, j) == 0) {
 				/* Try the move */
 				game_move(g, i, j);
+				moves++;
 
-				int current = minimax(g);
+				double current = minimax(g);
+
+				if (current < 0) {
+					sum++;
+				}
 
 				/* Pick the one that's worst for the opponent */
-				if(score == 0 || current == -1) {
+				if(score == 0 || -current > score) {
 					score = -current;
 					m.row = i;
 					m.col = j;
@@ -57,7 +65,7 @@ static int minimax(struct game *g) {
 
 	if(m.row == -1 && m.col == -1)
 		return 0;
-	return score;
+	return ((double) sum / moves);
 }
 
 static struct move move(struct player_c *p, struct move enemy_move) {
@@ -78,8 +86,15 @@ static struct move move(struct player_c *p, struct move enemy_move) {
 			if (board_get_cell(g->b, i, j) == 0) {
 				/* Try the move */
 				game_move(g, i, j);
-
-				int current = minimax(g);
+#ifdef DEBUG
+	printf("==> AI minimax root:\n");
+	board_print(g->b, stdout);
+	printf("--\n");
+#endif
+				double current = minimax(g);
+#ifdef DEBUG
+	printf("game result: %g\n", current);
+#endif
 
 				/* Pick the one that's worst for the opponent */
 				if(score == 0 || current == -1) {
