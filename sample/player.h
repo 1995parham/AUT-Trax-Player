@@ -19,5 +19,5 @@ struct move {
 
 struct player_c {
 	void *context;
-	struct move (*do_move)(struct player *p, struct move enemy_move);
+	struct move (*do_move)(struct player_c *p, struct move enemy_move);
 }
