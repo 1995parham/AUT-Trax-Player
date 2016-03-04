@@ -75,16 +75,18 @@ void board_print(const struct board *b, FILE *fp)
 {
 	int i, j;
 
+	fprintf(fp, "+");
+	for (j = 0; j < b->col; j++)
+		fprintf(fp, "---+");
+	fprintf(fp, "\n");
 	for (i = 0; i < b->row; i++) {
 		fprintf(fp, "|");
-		for (j = 0; j < b->col; j++) {
+		for (j = 0; j < b->col; j++)
 			fprintf(fp, " %c |", board_print_cell(b, i, j));
-		}
 		fprintf(fp, "\n");
 		fprintf(fp, "+");
-		for (j = 0; j < b->col; j++) {
+		for (j = 0; j < b->col; j++)
 			fprintf(fp, "---+");
-		}
 		fprintf(fp, "\n");
 	}
 }
