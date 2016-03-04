@@ -21,7 +21,6 @@
 
 static int minimax(struct game *g) {
 	/* How is the position like for player (their turn) on board? */
-	enum player p = g->turn;
 	enum state s = game_state(g);
 
 	if (s == WIN)
