@@ -9,6 +9,7 @@
 add_executable(sample.out main.c
 	game.c game.c
 	board.c board.h
+	ai.c ai.h
 	)
 
 # Add personal c flags
