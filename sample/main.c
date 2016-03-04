@@ -18,7 +18,7 @@
 
 #include <stdio.h>
 
-int main(int argc, char *argv)
+int main(int argc, char *argv[])
 {
 	int choose;
 	struct player_c *first, *second;
