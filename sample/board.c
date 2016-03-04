@@ -67,7 +67,8 @@ static char board_print_cell(const struct board *b, int row, int col)
 		return 'O';
 	case 2:
 		return 'X';
-    }
+	}
+	return ' ';
 }
 
 void board_print(const struct board *b, FILE *fp)
