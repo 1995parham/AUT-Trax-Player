@@ -48,4 +48,6 @@ struct player_c *ui_player_new(enum player p, int row, int col)
 	struct player_c *new = malloc(sizeof(struct player_c));
 	new->do_move = move;
 	new->context = game_new(p, row, col);
+
+	return new;
 }
