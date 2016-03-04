@@ -26,6 +26,8 @@ struct game *game_new(enum player p, int row, int col)
 	new->p = p;
 	new->turn = X;
 	new->s = NOTHING;
+
+	return new;
 }
 
 enum state game_state(struct game *g)
