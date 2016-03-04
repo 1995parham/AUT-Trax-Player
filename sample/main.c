@@ -36,9 +36,9 @@ int main(int argc, char *argv[])
 	scanf("%d", &choose);
 
 	if (choose == 1)
-		second = ai_player_new(X, 3, 3);
+		second = ai_player_new(O, 3, 3);
 	else
-		second = ui_player_new(X, 3, 3);
+		second = ui_player_new(O, 3, 3);
 
 	g = game_new(X, 3, 3);
 	struct move m = {-1, -1};
