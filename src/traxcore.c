@@ -11,7 +11,7 @@
  * =======================================
 */
 /*
- * Copyright (c) 2015 Parham Alvani.
+ * Copyright (c) 2015 Martin Møller Skarbiniks Pedersen.
 */
 #include <string.h>
 
