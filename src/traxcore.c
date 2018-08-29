@@ -5,6 +5,8 @@
  *
  * [] Creation Date : 26-04-2015
  *
+ * [] Created By : Martin Møller Skarbiniks Pedersen (traxplayer@gmail.com)
+ *
  * [] Created By : Parham Alvani (parham.alvani@gmail.com)
  * =======================================
 */
